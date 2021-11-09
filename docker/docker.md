@@ -115,7 +115,7 @@ DockerServer接收到Docker-Client的指令，就会执行这个命令！
 1. docker比虚拟机更少的抽象层
 2. docker利用的是宿主机的内核，VM需要是Guest OS
 
-![docker1](/Users/lushengyang/Desktop/LSY/StudeyNotes/image/docker1.png)
+![docker1](http://qiliu.luxiaobai.cn/img/docker1.png)
 
 ### **帮助命令**
 
@@ -789,7 +789,7 @@ docker run -d -p 8088:9000 \ --restart=always -v /var/run/docker.sock:/var/run/d
 
 这就是卷技术！目录的挂载，将我们容器内的目录，挂载到Linux上面
 
-![docker2](/Users/lushengyang/Desktop/LSY/StudeyNotes/image/docker2.png)
+![docker2](http://qiliu.luxiaobai.cn/img/docker2.png)
 
 **容器的持久化和同步操作！容器间也是可以数据共享的**
 
@@ -808,11 +808,11 @@ docker run -it -v 主机目录:容器内目录
 root@iZbp13941xpzjmefjge9chZ:/home/test# docker inspect d46651ae723b
 ```
 
-![docker3](/Users/lushengyang/Desktop/LSY/StudeyNotes/image/docker3.png)
+![docker3](http://qiliu.luxiaobai.cn/img/docker3.png)
 
 测试 文件同步
 
-![docker4](/Users/lushengyang/Desktop/LSY/StudeyNotes/image/docker4.png)
+![docker4](http://qiliu.luxiaobai.cn/img/docker4.png)
 
 
 
@@ -859,7 +859,7 @@ local     3b0175e0b56dac42d8598d027d67d85442218d595e60be2e163c9fc5344427d7
 #这种就是匿名挂载，在-v只写了容器内的路径，没有写容器外的路径
 ```
 
-![docker5](/Users/lushengyang/Desktop/LSY/StudeyNotes/image/docker5.png)
+![docker5](http://qiliu.luxiaobai.cn/img/docker5.png)
 
 
 
@@ -941,9 +941,9 @@ docker build -f /home/dockerImageConfig/docker-test-volume/dockerfile1 -t luxiao
 #这里的每个命令，就是镜像的一层
 ```
 
-![docker6](/Users/lushengyang/Desktop/LSY/StudeyNotes/image/docker6.png)
+![docker6](http://qiliu.luxiaobai.cn/img/docker6.png)
 
-![docker7](/Users/lushengyang/Desktop/LSY/StudeyNotes/image/docker7.png)
+![docker7](http://qiliu.luxiaobai.cn/img/docker7.png)
 
 
 
@@ -973,7 +973,7 @@ COPY                 # 类似ADD,将我们文件拷贝到镜像中
 ENV                  # 构建的时候设置环境变量！
 ```
 
-![docker10](/Users/lushengyang/Desktop/LSY/StudeyNotes/image/docker10.png)
+![docker10](http://qiliu.luxiaobai.cn/img/docker10.png)
 
 
 
@@ -984,7 +984,7 @@ ENV                  # 构建的时候设置环境变量！
 3. \#表示注释
 4. 每一个指令都会创建提交一个新的镜像层，并提交！
 
-![docker11](/Users/lushengyang/Desktop/LSY/StudeyNotes/image/docker11.png)
+![docker11](http://qiliu.luxiaobai.cn/img/docker11.png)
 
 dockerfile是面向开发的，发布项目，做镜像，就需要编写dockerfile文件
 
@@ -1002,7 +1002,7 @@ Docker镜像逐渐成为企业交付的标准。
 
 Docker Hub中99%镜像都是从这个基础镜像过来的FROM scratch,然后配置需要的软件和配置来进行的构建
 
-![docker12](/Users/lushengyang/Desktop/LSY/StudeyNotes/image/docker12.png)
+![docker12](http://qiliu.luxiaobai.cn/img/docker12.png)
 
 #### 创建一个自己的centos
 
@@ -1036,7 +1036,7 @@ Successfully tagged mycentos:0.1
 
 ##### 列出本地进行的变更历史
 
-![docker13](/Users/lushengyang/Desktop/LSY/StudeyNotes/image/docker13.png)
+![docker13](http://qiliu.luxiaobai.cn/img/docker13.png)
 
 
 
@@ -1258,27 +1258,27 @@ The push refers to repository [docker.io/shengyanglu/tomcat]
 
 3、参加命名空间
 
-![docker14](/Users/lushengyang/Desktop/LSY/StudeyNotes/image/docker14.png)
+![docker14](http://qiliu.luxiaobai.cn/img/docker14.png)
 
 
 
 4、创建容器镜像
 
-![docker15](/Users/lushengyang/Desktop/LSY/StudeyNotes/image/docker15.png)
+![docker15](http://qiliu.luxiaobai.cn/img/docker15.png)
 
 
 
-![docker16](/Users/lushengyang/Desktop/LSY/StudeyNotes/image/docker16.png)
+![docker16](http://qiliu.luxiaobai.cn/img/docker16.png)
 
 
 
-![docker17](/Users/lushengyang/Desktop/LSY/StudeyNotes/image/docker17.png)
+![docker17](http://qiliu.luxiaobai.cn/img/docker17.png)
 
 5、浏览阿里云信息
 
-![docker18](/Users/lushengyang/Desktop/LSY/StudeyNotes/image/docker18.png)
+![docker18](http://qiliu.luxiaobai.cn/img/docker18.png)
 
-![docker19](/Users/lushengyang/Desktop/LSY/StudeyNotes/image/docker19.png)
+![docker19](http://qiliu.luxiaobai.cn/img/docker19.png)
 
 
 
@@ -1288,7 +1288,7 @@ The push refers to repository [docker.io/shengyanglu/tomcat]
 
 ## 多个MySQL同步数据
 
-![docker8](/Users/lushengyang/Desktop/LSY/StudeyNotes/image/docker8.png)
+![docker8](http://qiliu.luxiaobai.cn/img/docker8.png)
 
 ```shell
 启动3个容器
@@ -1298,7 +1298,7 @@ root@iZbp13941xpzjmefjge9chZ:/home/dockerImageConfig/docker-test-volume# docker 
 root@iZbp13941xpzjmefjge9chZ:/home/dockerImageConfig/docker-test-volume# docker run -it --name docker02 --volumes-from docker01 luxiaobai/centos:1.0
 ```
 
-![docker9](/Users/lushengyang/Desktop/LSY/StudeyNotes/image/docker9.png)
+![docker9](http://qiliu.luxiaobai.cn/img/docker9.png)
 
 
 
@@ -1349,7 +1349,7 @@ bootfs(boot file system)主要包含bootloader和kernel，bootloader主要是**�
 
 rootfs(root file system),在bootfs之上，包含的就是Linux系统只能的/dev,/proc,/bin,/etc等标准目录和文件。rootfs就是各种不同的操作系统发行版，比如Ubuntu，Centos等等。
 
-![docker20](/Users/lushengyang/Desktop/LSY/StudeyNotes/image/docker20.png)
+![docker20](http://qiliu.luxiaobai.cn/img/docker20.png)
 
 ### 特点
 
@@ -1410,7 +1410,7 @@ tomcat02              1.0       f109f8c5a5b3   5 seconds ago   672MB
 tomcat                9.0       b0bf9a4a7c93   3 days ago      667MB
 ```
 
-![docker21](/Users/lushengyang/Desktop/LSY/StudeyNotes/image/docker21.png)
+![docker21](http://qiliu.luxiaobai.cn/img/docker21.png)
 
 网卡有3个，3个网络
 
@@ -1446,7 +1446,7 @@ linux可以ping通docker 容器内部
 
 在测试ip addr
 
-![docker22](/Users/lushengyang/Desktop/LSY/StudeyNotes/image/docker22.png)
+![docker22](http://qiliu.luxiaobai.cn/img/docker22.png)
 
 在启动一个容器,又多一对网卡
 
@@ -1456,7 +1456,7 @@ docker run -d -P --name tomcat02 tomcat
 docker exec -it tomcat02 ip addr
 ```
 
-![docker23](/Users/lushengyang/Desktop/LSY/StudeyNotes/image/docker23.png)
+![docker23](http://qiliu.luxiaobai.cn/img/docker23.png)
 
 ```docker
 容器带来的网卡,都是一对对
@@ -1479,11 +1479,11 @@ PING 172.17.0.2 (172.17.0.2) 56(84) bytes of data.
 
 tomcat0和 tomcat02是公用的一个路由器,docker路由的,dock儿会给我们的容器分配一个默认的可用IP
 
-![docker24](/Users/lushengyang/Desktop/LSY/StudeyNotes/image/docker24.png)
+![docker24](http://qiliu.luxiaobai.cn/img/docker24.png)
 
 Docker使用的是LInux的桥接，宿主机中是一个Docker容器的网桥 docker0。
 
-![docker25](/Users/lushengyang/Desktop/LSY/StudeyNotes/image/docker25.png)
+![docker25](http://qiliu.luxiaobai.cn/img/docker25.png)
 
 Docker中所有的网络接口都是虚拟的。虚拟的转发效率较高。
 
@@ -1520,7 +1520,7 @@ docker inspect 容器ID
 
 tomcat03 配置了Tomcat02的链接
 
-![docker26](/Users/lushengyang/Desktop/LSY/StudeyNotes/image/docker26.png)
+![docker26](http://qiliu.luxiaobai.cn/img/docker26.png)
 
 ```shell
 ##查看hosts配置，
@@ -1583,7 +1583,7 @@ e260b2dea0fa   mynet     bridge    local
 
 自己的网络
 
-![docker27](/Users/lushengyang/Desktop/LSY/StudeyNotes/image/docker27.png)
+![docker27](http://qiliu.luxiaobai.cn/img/docker27.png)
 
 ```shell
 [
@@ -1660,15 +1660,15 @@ redis--不同的集群使用不同的网络，保证集群是安全和健康的
 
 mysql--不同的集群使用不同的网络，保证集群是安全和健康的
 
-![docker28](/Users/lushengyang/Desktop/LSY/StudeyNotes/image/docker28.png)
+![docker28](http://qiliu.luxiaobai.cn/img/docker28.png)
 
 
 
 ## 网络连通
 
-![docker29](/Users/lushengyang/Desktop/LSY/StudeyNotes/image/docker29.png)
+![docker29](http://qiliu.luxiaobai.cn/img/docker29.png)
 
-![docker30](/Users/lushengyang/Desktop/LSY/StudeyNotes/image/docker30.png)
+![docker30](http://qiliu.luxiaobai.cn/img/docker30.png)
 
 ```shell
 #测试 打通 tomcat01 -mynet
@@ -1679,7 +1679,7 @@ docker network connect mynet tomcat01
 #阿里云服务 公网IP 私网IP
 ```
 
-![docker31](/Users/lushengyang/Desktop/LSY/StudeyNotes/image/docker31.png)
+![docker31](http://qiliu.luxiaobai.cn/img/docker31.png)
 
 > 假设要跨网络操作别人，就需要使用docker network connect 连通！
 
@@ -1888,11 +1888,11 @@ docker-compose up
 4. 1. Creating composetest_web_1   ... done
    2. Creating composetest_redis_1 ... done
 
-![docker32](/Users/lushengyang/Desktop/LSY/StudeyNotes/image/docker32.png)
+![docker32](http://qiliu.luxiaobai.cn/img/docker32.png)
 
 docker images
 
-![docker33](/Users/lushengyang/Desktop/LSY/StudeyNotes/image/docker33.png)
+![docker33](http://qiliu.luxiaobai.cn/img/docker33.png)
 
 ```shell
 root@iZbp13941xpzjmefjge9chZ:~# docker service ls
@@ -1909,11 +1909,11 @@ kubectl service 负载均衡
 
 3、网络规则
 
-![docker34](/Users/lushengyang/Desktop/LSY/StudeyNotes/image/docker34.png)
+![docker34](http://qiliu.luxiaobai.cn/img/docker34.png)
 
 10个服务-》项目（项目中的内容都在同个网络下，域名访问）
 
-![docker35](/Users/lushengyang/Desktop/LSY/StudeyNotes/image/docker35.png)
+![docker35](http://qiliu.luxiaobai.cn/img/docker35.png)
 
 如果在同一个网络下，可以通过域名访问。
 
@@ -1948,7 +1948,7 @@ networks:
 configs: 
 ```
 
-![docker36](/Users/lushengyang/Desktop/LSY/StudeyNotes/image/docker36.png)
+![docker36](http://qiliu.luxiaobai.cn/img/docker36.png)
 
 
 
@@ -2037,7 +2037,7 @@ docker stack deploy wordpress.yaml
 
 ```
 
-![docker37](/Users/lushengyang/Desktop/LSY/StudeyNotes/image/docker37.png)
+![docker37](http://qiliu.luxiaobai.cn/img/docker37.png)
 
 
 
@@ -2045,13 +2045,13 @@ docker stack deploy wordpress.yaml
 
 安全! 配置密码, 证书!
 
-![docker38](/Users/lushengyang/Desktop/LSY/StudeyNotes/image/docker38.png)
+![docker38](http://qiliu.luxiaobai.cn/img/docker38.png)
 
 ### Docker Config
 
 配置
 
-![docker39](/Users/lushengyang/Desktop/LSY/StudeyNotes/image/docker39.png)
+![docker39](http://qiliu.luxiaobai.cn/img/docker39.png)
 
 
 
@@ -2061,11 +2061,11 @@ docker stack deploy wordpress.yaml
 
 4台服务器
 
-![docker40](/Users/lushengyang/Desktop/LSY/StudeyNotes/image/docker40.png)
+![docker40](http://qiliu.luxiaobai.cn/img/docker40.png)
 
-![docker41](/Users/lushengyang/Desktop/LSY/StudeyNotes/image/docker41.png)
+![docker41](http://qiliu.luxiaobai.cn/img/docker41.png)
 
-![docker42](/Users/lushengyang/Desktop/LSY/StudeyNotes/image/docker42.png)
+![docker42](http://qiliu.luxiaobai.cn/img/docker42.png)
 
 4台服务器!!1主3从!!
 
@@ -2120,15 +2120,15 @@ sudo systemctl restart docker
 
 ### 工作模式
 
-![docker43](/Users/lushengyang/Desktop/LSY/StudeyNotes/image/docker43.png)
+![docker43](http://qiliu.luxiaobai.cn/img/docker43.png)
 
 ### **搭建集群**
 
-![docker44](/Users/lushengyang/Desktop/LSY/StudeyNotes/image/docker44.png)
+![docker44](http://qiliu.luxiaobai.cn/img/docker44.png)
 
-![docker46](/Users/lushengyang/Desktop/LSY/StudeyNotes/image/docker46.png)
+![docker46](http://qiliu.luxiaobai.cn/img/docker46.png)
 
-![docker45](/Users/lushengyang/Desktop/LSY/StudeyNotes/image/docker45.png)
+![docker45](http://qiliu.luxiaobai.cn/img/docker45.png)
 
 初始化节点 docker swarm init
 
@@ -2140,7 +2140,7 @@ docker2加入一个节点，作为工作节点
 docker swarm join --token SWMTKN-1-4cbdpajpqpnlfrwa9fnwrxsd4vtlm9stczpggq31m8bbr29qil-954m54sn65mxt6m39e9uemx6f 172.16.90.113:2377
 ```
 
-![docker47](/Users/lushengyang/Desktop/LSY/StudeyNotes/image/docker47.png)
+![docker47](http://qiliu.luxiaobai.cn/img/docker47.png)
 
 docker1
 
@@ -2158,7 +2158,7 @@ docker swarm join-token manager
 
 
 
-![docker48](/Users/lushengyang/Desktop/LSY/StudeyNotes/image/docker48.png)
+![docker48](http://qiliu.luxiaobai.cn/img/docker48.png)
 
 1. 生成主节点  docker swarm init  --advertise-addr 172.16.90.113
 2. 通过docker swarm join-token work/manager 生成对应的工作/管理 token，让其他节点加入进来
@@ -2179,11 +2179,11 @@ Raft协议：保证大多数节点存活才可以用，只要>1，集群至少�
 
 1. 将docker1停止宕机！双主，另外一个主节点也不能使用了
 
-![docker49](/Users/lushengyang/Desktop/LSY/StudeyNotes/image/docker49.png)
+![docker49](http://qiliu.luxiaobai.cn/img/docker49.png)
 
 2. 可以将其他节点离开
 
-![docker50](/Users/lushengyang/Desktop/LSY/StudeyNotes/image/docker50.png)
+![docker50](http://qiliu.luxiaobai.cn/img/docker50.png)
 
 3. work就是工作的、管理节点操作！docker1、3、4设置为了管理节点
 
@@ -2205,11 +2205,11 @@ docker service --help
 
 创建服务、动态扩展服务、动态更新服务
 
-![docker51](/Users/lushengyang/Desktop/LSY/StudeyNotes/image/docker51.png)
+![docker51](http://qiliu.luxiaobai.cn/img/docker51.png)
 
 #### **灰度发布：金丝雀发布！**
 
-![docker52](/Users/lushengyang/Desktop/LSY/StudeyNotes/image/docker52.png)
+![docker52](http://qiliu.luxiaobai.cn/img/docker52.png)
 
 ```shell
 docker run 容器启动！不具有扩缩容器
@@ -2255,7 +2255,7 @@ docker service scale my-nginx=5
 
 命令->管理->api->调度->工作节点(创建Task容器维护创建)
 
-![docker53](/Users/lushengyang/Desktop/LSY/StudeyNotes/image/docker53.png)
+![docker53](http://qiliu.luxiaobai.cn/img/docker53.png)
 
 调整service以什么方式运行
 

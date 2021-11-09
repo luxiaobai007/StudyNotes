@@ -1,179 +1,1041 @@
-# 索引
-
-索引是⼀种数据结构,可以帮助我们快速的进⾏数据的查找
-
-排好序的快速查找数据结构(B tree)
+[toc]
 
 
 
-索引的数据结构和具体存储引擎的实现有关, 在MySQL中使⽤较多的索引有Hash索引,B+树索引等,⽽我们经常使⽤的InnoDB存储 引擎的默认索引实现为:B+树索引. 
+# 入门
+
+## 数据库的好处
+
+​    1.持久化数据到本地
+​	2.可以实现结构化查询，方便管理
+
+## 数据库相关概念
+
+​	1、DB：数据库，保存一组有组织的数据的容器
+​	2、DBMS：数据库管理系统，又称为数据库软件（产品），用于管理DB中的数据
+​	3、SQL:结构化查询语言，用于和DBMS通信的语言
 
 
 
-## 优势
+## 数据库存储数据的特点
 
-- 建立索引,提高数据检索的效率,降低数据库的IO成本
-- 通过索引列堆数据进行排序,降低数据排序成本,降低了CPU的消耗
-
-
-
-## 劣势
-
-- 降低了更新表的速度,不仅要保存数据,还有保存索引文件
+​	1、将数据放到表中，表再放到库中
+​	2、一个数据库中可以有多个表，每个表都有一个的名字，用来标识自己。表名具有唯一性。
+​	3、表具有一些特性，这些特性定义了数据在表中如何存储，类似java中 “类”的设计。
+​	4、表由列组成，我们也称为字段。所有表都是由一个或多个列组成的，每一列类似java 中的”属性”
+​	5、表中的数据是按行存储的，每一行类似于java中的“对象”。
 
 
 
-## 索引分类
+## MySQL的常见命令
 
-### 单值索引
+```mysql
+1.查看当前所有的数据库
+show databases;
 
-即一个索引只包含单个列,一个表有多个单列索引
+2.打开指定的库
+use 库名
+
+3.查看当前库的所有表
+show tables;
+
+4.查看其它库的所有表
+show tables from 库名;
+
+5.创建表
+create table 表名(
+
+	列名 列类型,
+	列名 列类型，
+	。。。
+);
+
+6.查看表结构
+desc 表名;
+
+7.查看服务器的版本
+方式一：登录到mysql服务端
+select version();
+
+方式二：没有登录到mysql服务端
+mysql --version
+或
+mysql --V
+```
 
 
 
-### 唯一索引(unique)
+## MySQL的语法规范
 
-索引列的值必须唯一,单允许有空值
+​	1.不区分大小写,但建议关键字大写，表名、列名小写
+​	2.每条命令最好用分号结尾
+​	3.每条命令根据需要，可以进行缩进 或换行
+​	4.注释
+​		单行注释：#注释文字
+​		单行注释：-- 注释文字
+​		多行注释：/* 注释文字  */
 
 
 
-### 复合索引
+## SQL的语言分类
 
-即一个索引保护多个列
+- DQL（Data Query Language）：数据查询语言 select 
+- DML(Data Manipulate Language): 数据操作语言insert 、update、delete
+- DDL（Data Define Languge）：数据定义语言 create、drop、alter
+- TCL（Transaction Control Language）：事务控制语言  commit、rollback
 
 
 
-### 基本语法
+### DQL语言(数据查询语言 select )的学习
 
-#### 创建
+#### 1：基础查询
 
- ```mysql
-create [unique] index indexName on mytable(columnname(length));
-alter mytable add [unique] index [indexName] on (columnname(length))
- ```
+​	语法：
+
+```sql
+	SELECT 要查询的东西【FROM 表名】;
+```
+
+
+
+#### 2：条件查询
+
+​	条件查询：根据条件过滤原始表的数据，查询到想要的数据
+​	语法：
+
+```sql
+	select  要查询的字段|表达式|常量值|函数 from  表 where  条件 ;
+```
+
+分类：
+
+##### 一、条件表达式
+
+​	示例：salary>10000
+​	条件运算符： > < >= <= = != <>
+
+##### 二、逻辑表达式
+
+示例：salary>10000 && salary<20000
+
+逻辑运算符：
+	and（&&）:两个条件如果同时成立，结果为true，否则为false
+	or(||)：两个条件只要有一个成立，结果为true，否则为false
+	not(!)：如果条件成立，则not后为false，否则为true
+
+##### 三、模糊查询
+
+示例：last_name like 'a%'
+
+
+
+#### 3：排序查询
+
+语法：
+
+```sql
+select 要查询的东西 from 表 where  条件 order by 排序的字段|表达式|函数|别名 【asc|desc】
+```
+
+
+
+#### 4：常见函数
+
+##### 一、单行函数
+
+###### 1、字符函数
+
+​		concat拼接
+​		substr截取子串
+​		upper转换成大写
+​		lower转换成小写
+​		trim去前后指定的空格和字符
+​		ltrim去左边空格
+​		rtrim去右边空格
+​		replace替换
+​		lpad左填充
+​		rpad右填充
+​		instr返回子串第一次出现的索引
+​		length 获取字节个数
+​		
+
+###### 2、数学函数
+
+​	round 四舍五入
+​	rand 随机数
+​	floor向下取整
+​	ceil向上取整
+​	mod取余
+​	truncate截断
+
+###### 3、日期函数
+
+​	now 当前系统日期+时间
+​	curdate 当前系统日期
+​	curtime 当前系统时间
+​	str_to_date 将字符转换成日期
+​	date_format 将日期转换成字符
+
+###### 4、流程控制函数
+
+​	if 处理双分支
+​	case语句 处理多分支
+​		情况1：处理等值判断
+​		情况2：处理条件判断
+​	
+
+###### 5、其他函数
+
+​	version版本
+​	database当前库
+​	user当前连接用户
+​	
+
+##### 二、分组函数
+
+​	sum 求和
+​	max 最大值
+​	min 最小值
+​	avg 平均值
+​	count 计数
+
+特点：
+1、以上五个分组函数都忽略null值，除了count(*)
+2、sum和avg一般用于处理数值型
+	max、min、count可以处理任何数据类型
+3、都可以搭配distinct使用，用于统计去重后的结果
+4、count的参数可以支持：
+	字段、*常量值，一般放1
+
+   建议使用 count(*)
+
+
+
+#### 5：分组查询
+
+​	语法：
+
+```sql
+	select 查询的字段，分组函数 from 表 group by 分组的字段
+```
+
+特点：
+1、可以按单个字段分组
+2、和分组函数一同查询的字段最好是分组后的字段
+3、分组筛选
+针对的表			位置						关键字
+分组前筛选：	原始表					group by的前面		where
+分组后筛选：	分组后的结果集	group by的后面		having
+
+4、可以按多个字段分组，字段之间用逗号隔开
+5、可以支持排序
+6、having后可以支持别名
+
+
+
+#### 6：多表连接查询
+
+笛卡尔乘积：如果连接条件省略或无效则会出现
+解决办法：添加上连接条件
+
+##### 一、传统模式下的连接 ：等值连接——非等值连接
+
+1.等值连接的结果 = 多个表的交集
+2.n表连接，至少需要n-1个连接条件
+3.多个表不分主次，没有顺序要求
+4.一般为表起别名，提高阅读性和性能
+
+
+
+##### 二、sql99语法：通过join关键字实现连接
+
+含义：1999年推出的sql语法
+支持：
+等值连接、非等值连接 （内连接）
+外连接
+交叉连接
+
+语法：
+
+```sql
+select 字段，...
+from 表1
+【inner|left outer|right outer|cross】join 表2 on  连接条件
+【inner|left outer|right outer|cross】join 表3 on  连接条件
+【where 筛选条件】
+【group by 分组字段】
+【having 分组后的筛选条件】
+【order by 排序的字段或表达式】
+```
+
+好处：语句上，连接条件和筛选条件实现了分离
+
+
+
+##### 三、自连接
+
+案例：查询员工名和直接上级的名称
+
+sql99
+
+```mysql
+SELECT e.last_name,m.last_name
+FROM employees e
+JOIN employees m ON e.`manager_id`=m.`employee_id`;
+```
+
+sql92
+
+```mysql
+SELECT e.last_name,m.last_name
+FROM employees e,employees m 
+WHERE e.`manager_id`=m.`employee_id`;
+```
+
+
+
+#### 7：子查询
+
+一条查询语句中又嵌套了另一条完整的select语句，其中被嵌套的select语句，称为子查询或内查询,在外面的查询语句，称为主查询或外查询
+
+##### 特点
+
+1、子查询都放在小括号内
+2、子查询可以放在from后面、select后面、where后面、having后面，但一般放在条件的右侧
+3、子查询优先于主查询执行，主查询使用了子查询的执行结果
+4、子查询根据查询结果的行数不同分为以下两类：
+
+##### ① 单行子查询
+
+​	结果集只有一行
+​	一般搭配单行操作符使用：> < = <> >= <= 
+​	非法使用子查询的情况：
+​	a、子查询的结果为一组值
+​	b、子查询的结果为空
+​	
+
+##### ② 多行子查询
+
+​	结果集有多行
+​	一般搭配多行操作符使用：any、all、in、not in
+​	in： 属于子查询结果中的任意一个就行
+​	any和all往往可以用其他查询代替
+
+
+
+#### 8：分页查询
+
+实际的web项目中需要根据用户的需求提交对应的分页查询的sql语句
+
+```sql
+select 字段|表达式,...
+from 表
+【where 条件】
+【group by 分组字段】
+【having 条件】
+【order by 排序的字段】
+limit 【起始的条目索引，】条目数;
+```
+
+特点
+
+1.起始条目索引从0开始
+
+2.limit子句放在查询语句的最后
+
+3.公式：
+
+```mysql
+select * from  表 limit （page-1）*sizePerPage,sizePerPage
+
+每页显示条目数sizePerPage
+要显示的页数 page
+```
+
+
+
+#### 9：联合查询
+
+引入： union 联合、合并
+
+语法：
+
+```sql
+select 字段|常量|表达式|函数 【from 表】 【where 条件】 union 【all】
+select 字段|常量|表达式|函数 【from 表】 【where 条件】 union 【all】
+select 字段|常量|表达式|函数 【from 表】 【where 条件】 union  【all】
+.....
+select 字段|常量|表达式|函数 【from 表】 【where 条件】
+```
+
+##### 特点
+
+1、多条查询语句的查询的列数必须是一致的
+2、多条查询语句的查询的列的类型几乎相同
+3、union代表去重，union all代表不去重
+
+
+
+### DML语言(数据操作语言insert 、update、delete)
+
+#### 插入
+
+##### 语法：
+
+```sql
+insert into 表名(字段名，...) values(值1，...);
+```
+
+##### 特点：
+
+1、字段类型和值类型一致或兼容，而且一一对应
+2、可以为空的字段，可以不用插入值，或用null填充
+3、不可以为空的字段，必须插入值
+4、字段个数和值的个数必须一致
+5、字段可以省略，但默认所有字段，并且顺序和表中的存储顺序一致
+
+
+
+#### 修改
+
+##### 修改单表语法
+
+```sql
+update 表名 set 字段=新值,字段=新值【where 条件】
+```
+
+##### 修改多表语法
+
+```sql
+update 表1 别名1,表2 别名2
+set 字段=新值，字段=新值
+where 连接条件
+and 筛选条件
+```
 
 
 
 #### 删除
 
-```mysql
-drop index [indexName] on mytable;
+##### 方式1：delete语句 
+
+###### 单表的删除： ★
+
+```sql
+	delete from 表名 【where 筛选条件】
+```
+
+###### 多表的删除：
+
+```sql
+delete 别名1，别名2
+	from 表1 别名1，表2 别名2
+	where 连接条件
+	and 筛选条件;
 ```
 
 
 
-#### 查看
+##### 方式2：truncate语句
 
-```mysql
-show index from table name
+```sql
+truncate table 表名
 ```
 
 
 
-## BTree索引
+##### 两种方式(delete和truncate)的区别【面试题】
 
-### 什么情况下需要创建索引
+1.truncate不能加where条件，而delete可以加where条件
 
-1. 主键自动建立唯一索引
-2. 频繁作为查询条件的字段应该创建索引
-3. 查询中与其他表关联的字段,外键关系建立索引
-4. 频繁更新的字段不适合创建索引
-5. Where条件里用不到的字段不会创建索引
-6. 单键/组合索引的选择问题?(在高并发下倾向创建组合索引)
-7. 查询中排序的字段,排序字段若通过索引去访问将大大提高排序速度
-8. 查询中统计或者分组字段
+2.truncate的效率高一丢丢
+
+3.truncate 删除带自增长的列的表后，如果再插入数据，数据从1开始
+   delete 删除带自增长列的表后，如果再插入数据，数据从上一次的断点处开始
+
+4.truncate删除不能回滚，delete删除可以回滚
 
 
 
-### 什么情况下不需要创建索引
+### DDL（Data Define Languge）：数据定义语言 create、drop、alter
 
-1. 表记录太少
-2. 经常更删改的表
-3. 数据重复且分布平均的表字段
+#### 库和表的管理
 
+##### 库的管理：
 
-
-## 性能分析
-
-### Explain
-
-可以模拟优化器执行SQL查询语句,从而知道MYSQL是如何处理SQL语句的.分析查询语句或是表结构的性能瓶颈.
-
-```mysql
-explain + sql语句
-
-执行计划包含的信息
-+----+-------------+-----------------+------------+------+---------------+------+---------+------+------+----------+
-| id | select_type | table | partitions | type | possible_keys | key  | key_len | ref  | rows | filtered | Extra |
-+----+-------------+-----------------+------------+------+---------------+------+---------+------+------+----------+
+```sql
+一、创建库
+create database 库名
+二、删除库
+drop database 库名
 ```
 
--   **Id**:  select查询的序列号,表示查询中执行select子句或操作表的顺序
-  - ID相同,执行顺序由上至下
-  - id不同,如果是子查询,id的序号会递增**,id值越大优先级越高,越先执行**
-  - id相同又不同,ID相同可以认为是一组,从上往下顺序执行;在所有组中,ID值越大,优先级越高,越先执行.
-- select_type: 
-  - 类型:
-    1. SIMPLE:简单的子查询,查询中不包含子查询或者UNION
-    2. PRIAMRY: 查询中若包含任何复杂的子部分,最外层查询则被标记为
-    3. SUBQUERY: 在SELECT或WHERE列表中包含了子查询
-    4. DERIVED:在FROM列表中包含的子查询被标记为DERIVED(衍生),Mysql会递归执行这些子查询,把结果放在临时表
-    5. UNION: 若第二个SELECT出现在UNION之后,则被标记为UNION; 若UNION包含在FROM子句的子查询中,外层SELECT将被标记为: DERIVED
-    6. UNION RESULT:从UNION表获取结果的SELECT
-- **type:**
-  - 访问类型排列,显示查询使用了何种类型: 最好到最差==》 
-    - system>const>eq_ref>ref>range>index>ALL。一般来说,得保证查询至少达到range级别,最好能达到ref
-  - system: 表只有一行记录(等于系统表)这是const类型的特列,平时不会出现,忽略不计
-  - const: 通过索引一次就找到,const用于比较primary key或者unique索引.因为只匹配一行数据,所以很快,如将主键置于where列表中,MYSQL就能将该查询转换为一个常量
-  - eq_ref:唯一性索引扫描,对于每个索引键,表中只有一条记录与之匹配.常见于主键或唯一索引扫描
-  - ref:  非唯一性索引扫描,返回匹配某个单独值的所有行.本质上也是一种索引访问,它返回所有匹配某个单独值的行,然而,,它可能会找到多个符合条件的行,所以他应该属于查找和扫描的混合体
-  - range:  只检索给定范围的行,使用一个索引来选择行.key列显示使用了那个索引.一般就是在你的where语句中出现了between、<、>、in等的查询.这种范围扫描索引扫描比全表扫描要好,因为它只需要开始于索引的某一点,而结束语另一点,不用扫描全部索引.
-  - index: Full Index Scan. index与ALL区别为index类型只便利索引树.这通常比ALL快,因为索引文件通常比数据文件小.(也就是说**虽然all和index都是读全表,但index是从索引中读取的,而all是从硬盘中读的**)
-  - all: Full Table Scan,将遍历全表以找到匹配的行.
-- Possible_keys: 显示可能应用在这张表中的索引,一个或多个. 查询涉及到的字段上若存在索引,则该索引将被列出,但不一定被查询实际使用
-- **key**: 实际使用的索引.如果为NULL,则没有使用索引. **查询中若使用了覆盖索引,则该索引仅出现在key列**表中.
-- key_len:  表示索引中使用的字节数,可通过该列计算查询中使用的索引的长度.在不损失精确性的情况下,长度越短越好. key_len显示的值为索引字段的最大可能,并非实际使用长度,即key_len是根据表定义计算而得,不是通过表内检索出的
-- ref: 显示索引的那一列被使用了,如果可能的话,是一个常数.那些列或常量被用于查找索引列上的值
-- **rows**:  根据表统计信息及索引选用信息,大致估算出找到所需的记录所需要读取的行数,越少越好
-- **Extra**: 包含不适合在其他列中显示但十分重要的额外信息
-  - **Using filesort** : 说明mysql会对数据使用一个外部的索引排序,而不是按照表内的索引顺序进行读取.mysql中无法利用索引完成的排序操作称为“文件排序” .( **出现这个尽快优化,sql内部自己再一次进行了排序,多了一次索引排序==九死一生**)
-  - **Using temporary**(火烧眉毛,尽快解决):  使用了临时表保存中间结果,MySql在对查询结果排序时,使用临时表.常见于排序order by和分组查询group by.
-  - **Using index**:  表示相应的select操作中使用了覆盖索引(Covering Index), 避免了访问表的数据行,效率不错. 如果同时出现using where,表明索引被用来执行索引键值的查找; 如果没有同时出现using where, 表明索引用来读取数据而非执行查找动作.
-    - **覆盖索引**(Covering Index):  select的数据列只用从索引中就能够取得,不必读取数据行,Mysql可以利用索引返回select列表中的字段,而不必根据索引再次读取数据文件,换句话说查询列要被所建的索引覆盖
-  - Using where: 表明使用了where过滤
-  - Using join buffer: 使用了连续缓存
-  - impossible where: where子句的值总是false,不能用来获取任何元组
-  - select tables optimized away: 在没有 group by子句的情况下,基于索引优化MIN/MAX操作或者对于M YISAM存储引擎优化COUNT(*)操作,不必等到执行阶段在进行运算. 查询执行计划生成的阶段即完成优化
-  - distinct: 优化distinct操作,在找到第一匹配的元组后即停止找同样值的动作
+
+
+##### 表的管理
+
+###### 创建表
+
+```sql
+CREATE TABLE IF NOT EXISTS stuinfo(
+	stuId INT,
+	stuName VARCHAR(20),
+	gender CHAR,
+	bornDate DATETIME
+);
+DESC studentinfo;
+```
 
 
 
-# 索引优化
+###### 2.修改表 alter
 
-## 索引分析
+语法：
 
-### 单表
+```sql
+ALTER TABLE 表名 ADD|MODIFY|DROP|CHANGE COLUMN 字段名 【字段类型】;
+```
+
+①修改字段名
+
+```sql
+ALTER TABLE studentinfo CHANGE  COLUMN sex gender CHAR;
+```
+
+②修改表名
+
+```sql
+ALTER TABLE stuinfo RENAME [TO]  studentinfo;
+```
+
+③修改字段类型和列级约束
+
+```sql
+ALTER TABLE studentinfo MODIFY COLUMN borndate DATE ;
+```
+
+④添加字段
+
+```sql
+ALTER TABLE studentinfo ADD COLUMN email VARCHAR(20) first;
+```
+
+⑤删除字段
+
+```sql
+ALTER TABLE studentinfo DROP COLUMN email;
+```
+
+
+
+###### 3.删除表
+
+```sql
+DROP TABLE [IF EXISTS] studentinfo;
+```
 
 
 
 
 
+### 数据库事务
+
+通过一组逻辑操作单元（一组DML——sql语句），将数据从一种状态切换到另外一种状态
+
+#### 特点(ACID)
+
+- 原子性：要么都执行，要么都回滚
+- 一致性：保证数据的状态操作前和操作后保持一致
+- 隔离性：多个事务同时操作相同数据库的同一个数据时，一个事务的执行不受另外一个事务的干扰
+- 持久性：一个事务一旦提交，则数据将持久化到本地，除非其他事务对其进行修改
+
+
+
+#### 步骤
+
+```md
+1、开启事务
+2、编写事务的一组逻辑操作单元（多条sql语句）
+3、提交事务或回滚事务
+```
+
+
+
+#### 事务的分类
+
+##### 隐式事务
+
+没有明显的开启和结束事务的标志
+
+```sql
+比如:insert、update、delete语句本身就是一个事务
+```
+
+##### 显式事务
+
+具有明显的开启和结束事务的标志
+
+```md
+1、开启事务
+	取消自动提交事务的功能
+	
+	2、编写事务的一组逻辑操作单元（多条sql语句）
+	insert
+	update
+	delete
+	
+	3、提交事务或回滚事务
+```
+
+###### 关键字
+
+```sql
+set autocommit=0;
+start transaction;
+commit;
+rollback;
+
+savepoint  断点
+commit to 断点
+rollback to 断点
+```
+
+
+
+#### 事务的隔离级别
+
+##### 并发问题:
+
+当多个事务同时操作同一个数据库的相同数据时
+
+- 脏读：一个事务读取到了另外一个事务未提交的数据
+- 不可重复读：同一个事务中，多次读取到的数据不一致
+- 幻读：一个事务读取数据时，另外一个事务进行更新，导致第一个事务读取到了没有更新的数据
+
+
+
+##### 如何避免并发问题
+
+通过设置事务的隔离级别
+1、READ UNCOMMITTED
+2、READ COMMITTED 可以避免脏读
+3、REPEATABLE READ 可以避免脏读、不可重复读和一部分幻读
+4、SERIALIZABLE可以避免脏读、不可重复读和幻读
+
+
+
+##### 设置隔离级别
+
+```sql
+set session | global transaction isolation level 隔离级别名;
+```
+
+
+
+##### 查看隔离级别
+
+```sql
+select @@tx_isolation;
+```
+
+
+
+## 视图
+
+理解成一张虚拟的表
+
+
+
+### 视图和表的区别
+
+```sql
+			使用方式			占用物理空间
+
+视图	完全相同			不占用，仅仅保存的是sql逻辑
+
+表		完全相同			占用
+```
 
 
 
 
-### 两表
+
+### 优点
+
+```sql
+1、sql语句提高重用性，效率高
+2、和表实现了分离，提高了安全性
+```
 
 
 
-### 三表
+### 视图创建
+
+语法：
+
+```sql
+CREATE VIEW  视图名	AS 查询语句;
+```
+
+
+
+### 视图的增删改查
+
+#### 1、查看视图的数据 ★
+
+```sql
+SELECT * FROM my_v4;
+SELECT * FROM my_v1 WHERE last_name='Partners';
+```
+
+
+
+#### 2、插入视图的数据
+
+```sql
+INSERT INTO my_v4(last_name,department_id) VALUES('虚竹',90)
+```
+
+
+
+#### 3、修改视图的数据
+
+```sql
+UPDATE my_v4 SET last_name ='梦姑' WHERE last_name='虚竹';
+```
+
+
+
+#### 4、删除视图的数据
+
+```sql
+DELETE FROM my_v4;
+```
 
 
 
 
 
-## 索引失效(应该避免)
+### 某些视图不能更新
+
+包含以下关键字的sql语句：分组函数、distinct、group  by、having、union或者union all
+
+##### 	常量视图
+
+```sql
+	Select中包含子查询 join from一个不能更新的视图 where子句的子查询引用了from子句中的表
+```
 
 
 
-## 一般性建议
+### 视图逻辑的更新
+
+#### 方式一
+
+```sql
+	CREATE OR REPLACE VIEW test_v7
+	AS
+	SELECT last_name FROM employees
+	WHERE employee_id>100;
+```
+
+
+
+#### 方式二
+
+```sql
+ALTER VIEW test_v7
+AS
+SELECT employee_id FROM employees;
+
+SELECT * FROM test_v7;
+```
+
+
+
+### 视图的删除
+
+```sql
+DROP VIEW test_v1,test_v2,test_v3;
+```
+
+
+
+### 视图结构的查看	
+
+```sql
+DESC test_v7;
+SHOW CREATE VIEW test_v7;
+```
+
+
+
+## 存储过程
+
+一组经过预先编译的sql语句的集合
+
+#### 好处
+
+1、提高了sql语句的重用性，减少了开发程序员的压力
+2、提高了效率
+3、减少了传输次数
+
+
+
+#### 分类
+
+1、无返回无参
+2、仅仅带in类型，无返回有参
+3、仅仅带out类型，有返回无参
+4、既带in又带out，有返回有参
+5、带inout，有返回有参
+注意：in、out、inout都可以在一个存储过程中带多个
+
+
+
+#### 创建存储过程
+
+```sql
+create procedure 存储过程名(in|out|inout 参数名  参数类型,...)
+begin
+	存储过程体
+end
+```
+
+
+
+>1、需要设置新的结束标记
+>delimiter 新的结束标记
+>示例：
+>delimiter $
+>
+>CREATE PROCEDURE 存储过程名(IN|OUT|INOUT 参数名  参数类型,...)
+>BEGIN
+>	sql语句1;
+>	sql语句2;
+>
+>END $
+>
+>2、存储过程体中可以有多条sql语句，如果仅仅一条sql语句，则可以省略begin end
+>
+>3、参数前面的符号的意思
+>in:该参数只能作为输入 （该参数不能做返回值）
+>out：该参数只能作为输出（该参数只能做返回值）
+>inout：既能做输入又能做输出
+
+
+
+#### 调用存储过程
+
+```sql
+	call 存储过程名(实参列表)
+```
+
+
+
+## 函数
+
+#### 创建函数
+
+学过的函数：LENGTH、SUBSTR、CONCAT等
+语法：
+
+```sql
+CREATE FUNCTION 函数名(参数名 参数类型,...) RETURNS 返回类型
+BEGIN
+	函数体
+
+END
+```
+
+#### 调用函数
+
+```sql
+SELECT 函数名（实参列表）
+```
+
+
+
+## 函数和存储过程的区别
+
+```md
+关键字		调用语法	返回值											应用场景
+函数		FUNCTION	SELECT 函数()	只能是一个		一般用于查询结果为一个值并返回时，当有返回值而且仅仅一个
+存储过程	PROCEDURE	CALL 存储过程()	可以有0个或多个		一般用于更新
+```
+
+
+
+## 系统变量
+
+### 一、全局变量
+
+作用域：针对于所有会话（连接）有效，但不能跨重启
+
+```sql
+查看所有全局变量
+SHOW GLOBAL VARIABLES;
+
+查看满足条件的部分系统变量
+SHOW GLOBAL VARIABLES LIKE '%char%';
+
+查看指定的系统变量的值
+SELECT @@global.autocommit;
+
+为某个系统变量赋值
+SET @@global.autocommit=0;
+SET GLOBAL autocommit=0;
+```
+
+
+
+### 二、会话变量
+
+作用域：针对于当前会话（连接）有效
+
+```sql
+查看所有会话变量
+SHOW SESSION VARIABLES;
+
+查看满足条件的部分会话变量
+SHOW SESSION VARIABLES LIKE '%char%';
+
+查看指定的会话变量的值
+SELECT @@autocommit;
+SELECT @@session.tx_isolation;
+
+为某个会话变量赋值
+SET @@session.tx_isolation='read-uncommitted';
+SET SESSION tx_isolation='read-committed';
+```
+
+
+
+### 自定义变量
+
+#### 一、用户变量
+
+##### 声明并初始化：
+
+```sql
+SET @变量名=值;
+SET @变量名:=值;
+SELECT @变量名:=值;
+```
+
+
+
+##### 赋值
+
+```sql
+方式一：一般用于赋简单的值
+SET 变量名=值;
+SET 变量名:=值;
+SELECT 变量名:=值;
+
+方式二：一般用于赋表 中的字段值
+SELECT 字段名或表达式 INTO 变量
+FROM 表;
+```
+
+
+
+##### 使用
+
+```sql
+select @变量名;
+```
+
+
+
+### 区别
+
+作用域			定义位置								语法
+
+用户变量		当前会话								会话的任何地方		加@符号，不用指定类型
+局部变量		定义它的BEGIN END中 		BEGIN END的第一句话	一般不用加@,需要指定类型
+
+
+
+### 分支
+
+#### 一、if函数
+
+​	语法：if(条件，值1，值2)
+​	特点：可以用在任何位置
+
+#### 二、case语句
+
+语法：
+
+```sql
+情况一：类似于switch
+case 表达式
+when 值1 then 结果1或语句1(如果是语句，需要加分号) 
+when 值2 then 结果2或语句2(如果是语句，需要加分号)
+...
+else 结果n或语句n(如果是语句，需要加分号)
+end 【case】（如果是放在begin end中需要加上case，如果放在select后面不需要）
+
+情况二：类似于多重if
+case 
+when 条件1 then 结果1或语句1(如果是语句，需要加分号) 
+when 条件2 then 结果2或语句2(如果是语句，需要加分号)
+...
+else 结果n或语句n(如果是语句，需要加分号)
+end 【case】（如果是放在begin end中需要加上case，如果放在select后面不需要）
+```
+
+可以用在任何位置
+
+
+
+#### if elseif语句
+
+语法：
+
+```sql
+if 情况1 then 语句1;
+elseif 情况2 then 语句2;
+...
+else 语句n;
+end if;
+```
+
+只能用在begin end中！
+
+
+
+#### 三者比较：
+
+​					应用场合
+​	if函数		简单双分支
+​	case结构	等值判断 的多分支
+​	if结构		区间判断 的多分支
+
+
+
+### 循环
+
+语法
+
+```sql
+【标签：】WHILE 循环条件  DO
+	循环体
+END WHILE 【标签】;
+```
+
+
+
+特点
+
+```sql
+只能放在BEGIN END里面
+
+如果要搭配leave跳转语句，需要使用标签，否则可以不用标签
+
+leave类似于java中的break语句，跳出所在循环！！！
+```
+
+
+

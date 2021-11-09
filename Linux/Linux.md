@@ -161,6 +161,12 @@ groupdel 组名
 
 ```shell
 useradd -g 用户组 用户名
+
+
+###root提权
+useradd -g wheel luxiaobai
+###修改权限
+usermod -g wheel luxiaobai
 ```
 
 
@@ -184,6 +190,82 @@ useradd -g 用户组 用户名
 ### 口令配置文件(密码和登录信息):/etc/shadow
 
 登录名:加密口令:最后一次修改时间:最小时间间隔:最大时间间隔:警告时间:不活动时间:失效时间:标志  
+
+
+
+## 服务器安全设置
+
+1. 禁止非root用户执行`/etc/rc.d/init.d/`下的系统命令
+
+   ```shell
+   chmod -R 700 /etc/rc.d/init.d/*
+   chmod -R 777 /etc/rc.d/init.d/* #恢复默认设置
+   ```
+
+   
+
+2. 限制不同文件的权限
+
+   ```shell
+   chattr +a .bash_history #避免删除.bash_history或者重定向到/dev/null
+   chattr +i .bash_history
+   ```
+
+   
+
+3. 使用yum update更新系统时不升级内核,只更新软件包
+
+   ```
+   vi /etc/yum.conf
+   ##在[main]的最后添加
+   exclude=kernel*
+   
+   #直接在yum的命令后加上如下的参数
+   yum --exclude=kernel* update 
+   
+   #查看系统版本
+   cat /etc/issue
+   
+   查看内核版本
+   uname -a
+   ```
+
+   
+
+4. 关闭CentOS自动更新
+
+   ```shell
+   chkconfig --list yum-updatesd ##显示当前系统状态
+   ```
+
+   
+
+5. 删除MySQL历史记录.如果用SQL语句修改了数据库密码,也会因.mysql_history而泄露
+
+6. 隐藏服务器系统信息
+
+   ```shell
+   mv /etc/issue /etc/issuebak
+   ```
+
+   
+
+7. CentOS系统优化
+
+   ```shell
+   vi /etc/profile
+   ulimit -c unlimited
+   ulimit -s unlimited
+   ulimit -SHn 65535
+   ulimit -S -c 0
+   export LC_ALL=C
+   source /etc/profile
+   ulimit -a #显示当前的各种用户进程限制
+   ```
+
+   
+
+
 
 
 

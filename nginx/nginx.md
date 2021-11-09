@@ -1,3 +1,7 @@
+---
+title: 全面了解Nginx如何配置
+---
+
 [toc]
 
 
@@ -267,7 +271,7 @@ upstream myserver{
 
 Expires：是给一个资源设定一个过期时间，也就是说无需去服务端验证，直接通过浏览器自身确认是否过期即可，所以不会产生额外的流量。此方法非常适合不经常变动的资源。（如果经常更新的文件，不建议使用Expires来缓存），3d，表示3天之内访问这个URL，发送一个请求，比对服务器改文件最后更新时间没有变化，则不会从服务器抓取，返回状态码304， 如果有修改，则直接从服务器重新下载，返回状态码200。
 
-![截图](/Users/lushengyang/Desktop/LSY/document/image/截图.png)
+![截图](http://qiliu.luxiaobai.cn/img/%E6%88%AA%E5%9B%BE.png)
 
 
 
@@ -448,7 +452,7 @@ location / {
 
 ## **Nginx配置高可用的集群**
 
-![高可用nginx集群](/Users/lushengyang/Desktop/LSY/document/image/高可用nginx集群.png)
+![高可用nginx集群](http://qiliu.luxiaobai.cn/img/%E9%AB%98%E5%8F%AF%E7%94%A8nginx%E9%9B%86%E7%BE%A4.png)
 
 **Keepalived**
 
