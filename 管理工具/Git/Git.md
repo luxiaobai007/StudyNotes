@@ -118,3 +118,15 @@ git merge [branch]
  git branch -dr [remote/branch]
 ```
 
+
+
+
+
+# 现实场景
+
+Git 提交(commit)之后,想要撤回怎么办
+
+```shell
+git reset --soft HEAD^
+```
+
