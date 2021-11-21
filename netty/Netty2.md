@@ -906,213 +906,144 @@ public class TestHttpServerhandler extends SimpleChannelInboundHandler<HttpObjec
 3. ChannelHandler 及其实现类一览图(后)
 4. 需要自定义一个 Handler 类去继承 ChannelInboundHandlerAdapter，然后通过重写相应方法实现业务逻辑，一般都需要重写哪些方法
 
+![netty](http://qiliu.luxiaobai.cn/img/netty.png)
 
+![nettys1](http://qiliu.luxiaobai.cn/img/nettys1.png)
 
 
 
+####  **Pipeline和ChannelPipeline**
 
+**ChannelPipeline 是一个重点：**
 
+1. ChannelPipeline 是一个 Handler 的集合，它负责处理和拦截 inbound 或者 outbound 的事件和操作，相当于一个贯穿 Netty 的链。(也可以这样理解：ChannelPipeline 是 保存 ChannelHandler 的 List，用于处理或拦截Channel 的入站事件和出站操作)
+2. ChannelPipeline 实现了一种高级形式的拦截过滤器模式，使用户可以完全控制事件的处理方式，以及 Channel中各个的 ChannelHandler 如何相互交互
+3. 在 Netty 中每个 Channel 都有且仅有一个 ChannelPipeline 与之对应，它们的组成关系如下
 
+![nettys2](http://qiliu.luxiaobai.cn/img/nettys2.png)
 
+![nettys3](http://qiliu.luxiaobai.cn/img/nettys3.png)
 
+4.常用方法
 
+- - - ChannelPipeline addFirst(ChannelHandler... handlers)，把一个业务处理类（handler）添加到链中的第一个位置
+    - ChannelPipeline addLast(ChannelHandler... handlers)，把一个业务处理类（handler）添加到链中的最后一个位置
 
 
 
+#### **ChannelHandlerContext**
 
+1. 保存 Channel 相关的所有上下文信息，同时关联一个 ChannelHandler 对象
+2. 即 ChannelHandlerContext 中 包 含 一 个 具 体 的 事 件 处 理 器 ChannelHandler ， 同 时
+3. ChannelHandlerContext 中也绑定了对应的 pipeline 和 Channel 的信息，方便对 ChannelHandler 进行调用.
+4. 常用方法
 
+```java
+ChannelFuture close();//关闭通道
+ChannelOutboundInvoker flush();//熟悉
+ChannelFuture writeAndFlush(Object msg); //将数据写到ChannelPipeline中当前ChannelHandler 的下一个ChannelHandler开始处理(出站)
+```
 
 
 
+#### Channel Option
 
+1. Netty 在创建 Channel 实例后,一般都需要设置 ChannelOption 参数。
+2. ChannelOption 参数如下:
 
+![nettys4](http://qiliu.luxiaobai.cn/img/nettys4.png)
 
 
 
+### **EventLoopGroup 和其实现类 NioEventLoopGroup**
 
+1. EventLoopGroup 是一组 EventLoop 的抽象，Netty 为了更好的利用多核 CPU 资源，一般会有多个 EventLoop同时工作，每个 EventLoop 维护着一个 Selector 实例。
+2. EventLoopGroup 提供 next 接口，可以从组里面按照一定规则获取其中一个 EventLoop 来处理任务。在 Netty服 务 器 端 编 程 中 ， 我 们 一 般 都 需 要 提 供 两 个 EventLoopGroup ， 例 如 ： BossEventLoopGroup 和WorkerEventLoopGroup。
+3. 通常一个服务端口即一个 ServerSocketChannel 对应一个 Selector 和一个 EventLoop 线程。BossEventLoop 负责接收客户端的连接并将 SocketChannel 交给 WorkerEventLoopGroup 来进行 IO 处理，如下图所示
 
+![nettys5](http://qiliu.luxiaobai.cn/img/nettys5.png)
 
+**常用方法**
 
+```java
+public NioEventLoopGroup()，构造方法
+public Future<?> shutdownGracefully()，断开连接，关闭线程
+```
 
 
 
+### **Unpooled类**
 
+Netty 提供一个专门用来操作缓冲区(即 Netty 的数据容器)的工具类
 
+```java
+//通过给定的数据和字符编码返回一个ByteBuf对象(类似于NIO中的ByteBuffer但有区别)
+public static ByteBuf copiedBuffer(CharSequence string, Charset charset)
+```
 
+实例--Unpooled 获取Netty的数据容器ByteBuf的基本使用
 
+```java
+public class NettyByteBuf01 {
+    public static void main(String[] args) {
+        //创建一个ByteBuf
+        //说明
+        //1 创建对象，该对象包含一个数组arr，是一个byte[10]
+        //2 在netty的buffer中，不需要flip进行反转
+        //  底层维护了readerindex和writeindex
+        //3 通过readerindex和writeindex 和 capacity ，将buffer分成三个区域
+        // 0------readerindex ---writerIndex， 可读的区域
+        // writerIndex -- capacity, 可写的区域
+        ByteBuf buffer = Unpooled.buffer(10);
+        for (int i = 0; i< 10;i++){
+            buffer.writeByte(i);
+        }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+        System.out.println("capacity:" + buffer.capacity());
+        //输出
+//        for (int i = 0; i< buffer.capacity();i++){
+//            System.out.println(buffer.getByte(i));
+//        }
+        for (int i = 0; i< buffer.capacity();i++){
+            System.out.println(buffer.readByte());
+        }
+    }
+}
+public class NettyByteBuff02 {
+    public static void main(String[] args) {
+
+        //创建ByteBuf
+        ByteBuf buf = Unpooled.copiedBuffer("hello,world!", Charset.forName("utf-8"));
+        if (buf.hasArray()){
+            byte[] content = buf.array();
+
+//            将content转成字符串
+            System.out.println(new String(content,Charset.forName("utf-8")));
+            System.out.println("byteBuf=" + buf);
+            //获取数组的偏移量
+            System.out.println(buf.arrayOffset()); //0
+            System.out.println(buf.readerIndex()); //0
+            System.out.println(buf.writerIndex()); //12
+            System.out.println(buf.capacity());    //36
+
+            int len = buf.readableBytes();          //可读的字节数量
+            System.out.println(len);
+
+            for (int i = 0; i< len;i++){
+                System.out.println((char) buf.getByte(i));
+            }
+
+            //按照区间读取
+            System.out.println(buf.getCharSequence(0,4,Charset.forName("utf-8")));
+            System.out.println(buf.getCharSequence(4,6,Charset.forName("utf-8")));
+        }
+    }
+}
+```
+
+[Netty通过WebSocket编程实现服务器和客户端长连接](https://download.csdn.net/download/weixin_45268711/41356981)
+
+[Netty实例-群聊系统](https://download.csdn.net/download/weixin_45268711/41358365)
+
+[**Netty心跳检测机制**](https://download.csdn.net/download/weixin_45268711/41358488)
 
