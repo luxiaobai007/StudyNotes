@@ -1,0 +1,62 @@
+kind: pipeline
+branches: [master, rc]
+
+
+trigger:
+  branch:
+    - master
+    - rc
+
+steps:
+   #1.gradle打包
+	- name: gradle-build-rc
+	pull: if-not-exists
+    image: androidsdk/android-30
+    volumes:
+        - name: cache
+        path: /root/.gradle
+         #挂载宿主机的目录
+    - name: data
+    path: /home
+    commands:
+		- pwd
+		- java -version
+		- chmod +x ./gradlew
+		- chmod +x ./upload
+		- echo "sdk.dir=/opt/android-sdk-linux" > local.properties # 指定sdk的位置
+		- echo "debug.API_SERVER=http://192.168.3.139:10003" >> local.properties
+		- ./gradlew assembleDebug
+		- ls -al app/build/outputs/apk/debug
+		- ./upload ./app/build/outputs/apk/debug http://192.168.3.139:10003
+	when:
+    branch:
+        - rc
+ # 3. 钉钉通知
+    - name: dingtalk
+    image: guoxudongdocker/drone-dingtalk
+	settings:
+		token:
+		from_secret: token
+		message_color: true
+		type: markdown
+		message_pic: true
+		sha_link: true
+		when:
+		status:
+			- success
+			- changed
+			- failure
+
+   # 挂载的主机卷，可以映射到docker容器中
+   volumes:
+	 # maven构建缓存
+	   - name: cache
+		   host:
+			path: /home/ubuntu/project/antl/antl-android
+			- name: data
+			host:
+			path: /home/ubuntu/project/antl/antl   #这边需要改成drone服务器上项目对应的文件路径
+			- name: hosts
+			host:
+			path: /etc/hosts
+																										

@@ -121,6 +121,21 @@ sync 把内存的数据同步到磁盘
 
 
 
+```shell
+###增加用户
+sudo adduser luxiaobai
+##将用户添加到sudo组
+sudo usermod -aG sudo luxiaobai
+###删除用户  userdel/deluser ubuntu上推荐deluser
+sudo deluser username ##删除用户而不删除用户文件
+sudo deluser --remove-home username ##删除用户的家目录和邮件使用
+
+```
+
+
+
+
+
 ### 查询用户信息
 
 id 用户

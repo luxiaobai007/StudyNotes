@@ -1,0 +1,2676 @@
+{
+	"info": {
+		"_postman_id": "247ab0fa-6a81-49e2-9971-05e6510c653c",
+		"name": "Elasticsearch",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "重新索引",
+			"item": [
+				{
+					"name": "新建索引",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"settings\": {\r\n        \"number_of_shards\": 120,\r\n        \"number_of_replicas\": 0\r\n    },\r\n    \"mappings\": {\r\n        \"properties\": {\r\n            \"number\": {\r\n                \"type\": \"text\"\r\n            }\r\n        }\r\n    }\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://127.0.0.1:9200/txt_number2",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "9200",
+							"path": [
+								"txt_number2"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "数据拷贝",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"source\": {\r\n        \"index\": \"txt_number\",\r\n        \"size\": 1000\r\n    },\r\n    \"dest\": {\r\n        \"index\": \"txt_number2\"\r\n    }\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://127.0.0.1:9200/_reindex?wait_for_completion=false&slices=auto&refresh",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "9200",
+							"path": [
+								"_reindex"
+							],
+							"query": [
+								{
+									"key": "wait_for_completion",
+									"value": "false"
+								},
+								{
+									"key": "slices",
+									"value": "auto"
+								},
+								{
+									"key": "refresh",
+									"value": null
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "修改refresh间隔",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"refresh_interval\": -1\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://127.0.0.1:9200/_settings",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "9200",
+							"path": [
+								"_settings"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "查看重建进程",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://127.0.0.1:9200/_tasks/ht47RSRgSZaj-tUtEEkrZQ:513651",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "9200",
+							"path": [
+								"_tasks",
+								"ht47RSRgSZaj-tUtEEkrZQ:513651"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "放弃重建索引任务",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "http://127.0.0.1:9200/_tasks/ht47RSRgSZaj-tUtEEkrZQ:328047/_cancel",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "9200",
+							"path": [
+								"_tasks",
+								"ht47RSRgSZaj-tUtEEkrZQ:328047",
+								"_cancel"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "获取当前允许的任务",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://127.0.0.1:9200/_tasks",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "9200",
+							"path": [
+								"_tasks"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "查看当前索引",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://127.0.0.1:9200/txt_number/_mapping",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "9200",
+							"path": [
+								"txt_number",
+								"_mapping"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "op_type在文档数量不一致情况下使用",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"conflicts\": \"proceed\",\r\n    \"source\": {\r\n        \"index\": \"txt_number\",\r\n        \"size\": \"5000\"\r\n    },\r\n    \"dest\": {\r\n        \"index\": \"txt_number2\",\r\n        //  \"version_type\": \"external_gt\"\r\n        \"op_type\": \"create\"\r\n    }\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://127.0.0.1:9200/_reindex?wait_for_completion=false&slices=5&refresh",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "9200",
+							"path": [
+								"_reindex"
+							],
+							"query": [
+								{
+									"key": "wait_for_completion",
+									"value": "false"
+								},
+								{
+									"key": "slices",
+									"value": "5"
+								},
+								{
+									"key": "refresh",
+									"value": null
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "version_type重新索引",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"source\": {\r\n    \"index\": \"txt_number\"\r\n  },\r\n  \"dest\": {\r\n    \"index\": \"txt_number3\",\r\n    \"version_type\": \"external | internal\"\r\n  }\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://127.0.0.1:9200/txt_number3",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "9200",
+							"path": [
+								"txt_number3"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "sedb重新索引预估",
+			"item": [
+				{
+					"name": "创建sedb_20220114",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"settings\": {\r\n    \"number_of_shards\" : \"120\",\r\n    \"number_of_replicas\" : \"0\",\r\n    \"analysis\": {\r\n      \"filter\": {\r\n        \"email\": {\r\n          \"type\": \"pattern_capture\",\r\n          \"preserve_original\": true,\r\n          \"patterns\": [\r\n            \"([^@]+)\",\r\n            \"(\\\\p{L}+)\",\r\n            \"(\\\\d+)\",\r\n            \"@(.+)\",\r\n            \"([^-@]+)\"\r\n          ]\r\n        },\r\n        \"suf_email\" : {\r\n              \"type\" : \"pattern_capture\",\r\n              \"preserve_original\" : \"true\",\r\n              \"patterns\" : [\r\n                \"@(\\\\w+)\",\r\n                \"@(.+)\",\r\n                \"@(\\\\w+\\\\.\\\\w+)\",\r\n                \"@(\\\\w+\\\\.\\\\w+.\\\\w+)\"\r\n              ]\r\n            },\r\n          \"pre_email\" : {\r\n            \"type\" : \"pattern_capture\",\r\n            \"preserve_original\" : \"true\",\r\n            \"patterns\" : [\r\n              \"(.+)@\"\r\n            ]\r\n          }\r\n      },\r\n      \"analyzer\": {\r\n        \"email\": {\r\n          \"tokenizer\": \"uax_url_email\",\r\n          \"filter\": [\r\n            \"email\",\r\n            \"lowercase\",\r\n            \"unique\"\r\n          ]\r\n        },\r\n        \"suf_email\" : {\r\n           \"tokenizer\" : \"uax_url_email\",\r\n           \"filter\" : [\r\n              \"suf_email\",\r\n              \"lowercase\",\r\n              \"unique\"\r\n          ]\r\n        },\r\n        \"pre_email\" : {\r\n          \"tokenizer\" : \"uax_url_email\",\r\n          \"filter\" : [\r\n            \"pre_email\",\r\n            \"lowercase\",\r\n            \"unique\"\r\n          ]\r\n      }\r\n      }\r\n    }\r\n  },\r\n  \"mappings\": {\r\n      \"properties\": {\r\n        \"email\": {\r\n          \"type\": \"text\",\r\n          \"analyzer\": \"email\",\r\n          \"search_analyzer\": \"email\",\r\n           \"copy_to\" : [\r\n            \"pre_email\",\r\n            \"suf_email\"\r\n          ]\r\n        },\r\n        \"pre_email\" : {\r\n            \"type\" : \"text\",\r\n            \"analyzer\" : \"pre_email\",\r\n            \"search_analyzer\": \"pre_email\"\r\n        },\r\n        \"suf_email\" : {\r\n          \"type\" : \"text\",\r\n          \"analyzer\" : \"suf_email\",\r\n          \"search_analyzer\": \"suf_email\"\r\n        },\r\n        \"username\": {\r\n          \"type\": \"text\",\r\n          \"analyzer\": \"email\"\r\n        },\r\n        \"password_hash\": {\r\n           \"type\": \"text\"\r\n        },\r\n        \"password\": {\r\n          \"type\": \"text\"\r\n        },\r\n        \"info_str\": {\r\n          \"type\": \"text\",\r\n          \"analyzer\": \"ik_max_word\",\r\n          \"search_analyzer\": \"ik_max_word\"\r\n        },\r\n        \"db\":{\r\n          \"properties\":{\r\n          \"fileTime\": {\"type\": \"date\"},\r\n          \"sedbName\": {\"type\": \"text\"}\r\n          }\r\n        }\r\n      }\r\n  }\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://192.168.3.147:9200/sedb_20220117",
+							"protocol": "http",
+							"host": [
+								"192",
+								"168",
+								"3",
+								"147"
+							],
+							"port": "9200",
+							"path": [
+								"sedb_20220117"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "数据拷贝",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"source\": {\r\n        \"index\": \"sedb\",\r\n        \"size\": 5000\r\n    },\r\n    \"dest\": {\r\n        \"index\": \"sedb_20220117\"\r\n    }\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://192.168.3.147:9200/_reindex?wait_for_completion=false&slices=auto&refresh",
+							"protocol": "http",
+							"host": [
+								"192",
+								"168",
+								"3",
+								"147"
+							],
+							"port": "9200",
+							"path": [
+								"_reindex"
+							],
+							"query": [
+								{
+									"key": "wait_for_completion",
+									"value": "false"
+								},
+								{
+									"key": "slices",
+									"value": "auto"
+								},
+								{
+									"key": "refresh",
+									"value": null
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "查看重建索引进程",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://192.168.3.147:9200/_tasks/bNzcBmc-QHWYkgFdi0nhTg:11607",
+							"protocol": "http",
+							"host": [
+								"192",
+								"168",
+								"3",
+								"147"
+							],
+							"port": "9200",
+							"path": [
+								"_tasks",
+								"bNzcBmc-QHWYkgFdi0nhTg:11607"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "放弃重建索引任务",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://192.168.3.147:9200/_tasks/${taskID}/cancel",
+							"protocol": "http",
+							"host": [
+								"192",
+								"168",
+								"3",
+								"147"
+							],
+							"port": "9200",
+							"path": [
+								"_tasks",
+								"${taskID}",
+								"cancel"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "sedb多索引别名配置",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"url": {
+							"raw": "http://192.168.3.147:9200/sedb/_alias/sedb_search",
+							"protocol": "http",
+							"host": [
+								"192",
+								"168",
+								"3",
+								"147"
+							],
+							"port": "9200",
+							"path": [
+								"sedb",
+								"_alias",
+								"sedb_search"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "创建多索引",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"settings\": {\r\n    \"number_of_shards\" : \"100\",\r\n    \"number_of_replicas\" : \"0\",\r\n    \"refresh_intervals\": -1,\r\n    \"analysis\": {\r\n      \"filter\": {\r\n        \"email\": {\r\n          \"type\": \"pattern_capture\",\r\n          \"preserve_original\": true,\r\n          \"patterns\": [\r\n            \"([^@]+)\",\r\n            \"(\\\\p{L}+)\",\r\n            \"(\\\\d+)\",\r\n            \"@(.+)\",\r\n            \"([^-@]+)\"\r\n          ]\r\n        },\r\n        \"suf_email\" : {\r\n              \"type\" : \"pattern_capture\",\r\n              \"preserve_original\" : \"true\",\r\n              \"patterns\" : [\r\n                \"@(\\\\w+)\",\r\n                \"@(.+)\",\r\n                \"@(\\\\w+\\\\.\\\\w+)\",\r\n                \"@(\\\\w+\\\\.\\\\w+.\\\\w+)\"\r\n              ]\r\n            },\r\n          \"pre_email\" : {\r\n            \"type\" : \"pattern_capture\",\r\n            \"preserve_original\" : \"true\",\r\n            \"patterns\" : [\r\n              \"(.+)@\"\r\n            ]\r\n          }\r\n      },\r\n      \"analyzer\": {\r\n        \"email\": {\r\n          \"tokenizer\": \"uax_url_email\",\r\n          \"filter\": [\r\n            \"email\",\r\n            \"lowercase\",\r\n            \"unique\"\r\n          ]\r\n        },\r\n        \"suf_email\" : {\r\n           \"tokenizer\" : \"uax_url_email\",\r\n           \"filter\" : [\r\n              \"suf_email\",\r\n              \"lowercase\",\r\n              \"unique\"\r\n          ]\r\n        },\r\n        \"pre_email\" : {\r\n          \"tokenizer\" : \"uax_url_email\",\r\n          \"filter\" : [\r\n            \"pre_email\",\r\n            \"lowercase\",\r\n            \"unique\"\r\n          ]\r\n      }\r\n      }\r\n    }\r\n  },\r\n  \"mappings\": {\r\n      \"properties\": {\r\n        \"email\": {\r\n          \"type\": \"text\",\r\n          \"analyzer\": \"email\",\r\n          \"search_analyzer\": \"email\",\r\n           \"copy_to\" : [\r\n            \"pre_email\",\r\n            \"suf_email\"\r\n          ]\r\n        },\r\n        \"pre_email\" : {\r\n            \"type\" : \"text\",\r\n            \"analyzer\" : \"pre_email\",\r\n            \"search_analyzer\": \"pre_email\"\r\n        },\r\n        \"suf_email\" : {\r\n          \"type\" : \"text\",\r\n          \"analyzer\" : \"suf_email\",\r\n          \"search_analyzer\": \"suf_email\"\r\n        },\r\n        \"username\": {\r\n          \"type\": \"text\",\r\n          \"analyzer\": \"email\"\r\n        },\r\n        \"password_hash\": {\r\n           \"type\": \"text\"\r\n        },\r\n        \"password\": {\r\n          \"type\": \"text\"\r\n        },\r\n        \"info_str\": {\r\n          \"type\": \"text\",\r\n          \"analyzer\": \"ik_max_word\",\r\n          \"search_analyzer\": \"ik_max_word\"\r\n        },\r\n        \"db\":{\r\n          \"properties\":{\r\n          \"fileTime\": {\"type\": \"date\"},\r\n          \"sedbName\": {\"type\": \"text\"}\r\n          }\r\n        }\r\n      }\r\n  }\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://192.168.3.147:9200/sedb2_2022114_index",
+							"protocol": "http",
+							"host": [
+								"192",
+								"168",
+								"3",
+								"147"
+							],
+							"port": "9200",
+							"path": [
+								"sedb2_2022114_index"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "多索引文档增加和查询别名设置",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"actions\": [\r\n        {\r\n            \"add\": {\r\n                \"index\": \"sedb_2022114_index\",\r\n                \"alias\": \"sedb_search\"\r\n            }\r\n        },\r\n        {\r\n            \"remove\": {\r\n                \"index\": \"sedb\",\r\n                \"alias\": \"sedb_index\"\r\n            }\r\n        },\r\n        {\r\n            \"add\": {\r\n                \"index\": \"sedb_2022114_index\",\r\n                \"alias\": \"sedb_index\"\r\n            }\r\n        }\r\n    ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://192.168.3.147:9200/_aliases",
+							"protocol": "http",
+							"host": [
+								"192",
+								"168",
+								"3",
+								"147"
+							],
+							"port": "9200",
+							"path": [
+								"_aliases"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "恢复refresh_interval间隔，和设置副本数",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\t\"refresh_interval\": -1 //如果对实时要求不是很高可以设置为30\r\n\t// \"number_of_replicas\": 1\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://192.168.3.147:9200/sedb/_settings",
+							"protocol": "http",
+							"host": [
+								"192",
+								"168",
+								"3",
+								"147"
+							],
+							"port": "9200",
+							"path": [
+								"sedb",
+								"_settings"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "修改refresh间隔",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"refresh_interval\": \"-1\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://192.168.3.147:9200/_settings",
+							"protocol": "http",
+							"host": [
+								"192",
+								"168",
+								"3",
+								"147"
+							],
+							"port": "9200",
+							"path": [
+								"_settings"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "op_type 对于文档数量没有同步成功下的使用",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"conflicts\": \"proceed\",\r\n    \"source\": {\r\n        \"index\": \"sedb\",\r\n        \"size\": \"5000\"\r\n    },\r\n    \"dest\": {\r\n        \"index\": \"sedb_20220117\",\r\n        \"op_type\": \"create\"\r\n    }\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://192.168.3.147:9200/_reindex?wait_for_completion=false&slices=auto&refresh",
+							"protocol": "http",
+							"host": [
+								"192",
+								"168",
+								"3",
+								"147"
+							],
+							"port": "9200",
+							"path": [
+								"_reindex"
+							],
+							"query": [
+								{
+									"key": "wait_for_completion",
+									"value": "false"
+								},
+								{
+									"key": "slices",
+									"value": "auto"
+								},
+								{
+									"key": "refresh",
+									"value": null
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "集群分片分析和恢复",
+			"item": [
+				{
+					"name": "创建索引",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "token",
+								"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyTmFtZSI6InhpYW9iYWkiLCJleHAiOjE2MzgwOTEyNzIsInVzZXJJZCI6IjEifQ.7Zs1ewRZDUGXi2X-rFkRXFOw1q3CExRB0djPSyHiXgI",
+								"type": "text",
+								"disabled": true
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"settings\": {\n        \"number_of_shards\": 20,\n        \"number_of_replicas\": 0\n    },\n    \"mappings\": {\n        \"properties\": {\n            \"number\": {\n                \"type\": \"text\"\n            }\n        }\n    }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://127.0.0.1:9200/txt_number2",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "9200",
+							"path": [
+								"txt_number2"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "查看计算状态",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"query\": {\r\n    \"match_all\": {}\r\n  }\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://192.168.3.211:9200/test/_search",
+							"protocol": "http",
+							"host": [
+								"192",
+								"168",
+								"3",
+								"211"
+							],
+							"port": "9200",
+							"path": [
+								"test",
+								"_search"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "创建sedb",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"settings\": {\r\n    \"number_of_shards\" : \"50\",\r\n    \"number_of_replicas\" : \"0\",\r\n    \"analysis\": {\r\n      \"filter\": {\r\n        \"email\": {\r\n          \"type\": \"pattern_capture\",\r\n          \"preserve_original\": true,\r\n          \"patterns\": [\r\n            \"([^@]+)\",\r\n            \"(\\\\p{L}+)\",\r\n            \"(\\\\d+)\",\r\n            \"@(.+)\",\r\n            \"([^-@]+)\"\r\n          ]\r\n        },\r\n        \"suf_email\" : {\r\n              \"type\" : \"pattern_capture\",\r\n              \"preserve_original\" : \"true\",\r\n              \"patterns\" : [\r\n                \"@(\\\\w+)\",\r\n                \"@(.+)\",\r\n                \"@(\\\\w+\\\\.\\\\w+)\",\r\n                \"@(\\\\w+\\\\.\\\\w+.\\\\w+)\"\r\n              ]\r\n            },\r\n          \"pre_email\" : {\r\n            \"type\" : \"pattern_capture\",\r\n            \"preserve_original\" : \"true\",\r\n            \"patterns\" : [\r\n              \"(.+)@\"\r\n            ]\r\n          }\r\n      },\r\n      \"analyzer\": {\r\n        \"email\": {\r\n          \"tokenizer\": \"uax_url_email\",\r\n          \"filter\": [\r\n            \"email\",\r\n            \"lowercase\",\r\n            \"unique\"\r\n          ]\r\n        },\r\n        \"suf_email\" : {\r\n           \"tokenizer\" : \"uax_url_email\",\r\n           \"filter\" : [\r\n              \"suf_email\",\r\n              \"lowercase\",\r\n              \"unique\"\r\n          ]\r\n        },\r\n        \"pre_email\" : {\r\n          \"tokenizer\" : \"uax_url_email\",\r\n          \"filter\" : [\r\n            \"pre_email\",\r\n            \"lowercase\",\r\n            \"unique\"\r\n          ]\r\n      }\r\n      }\r\n    }\r\n  },\r\n  \"mappings\": {\r\n      \"properties\": {\r\n        \"email\": {\r\n          \"type\": \"text\",\r\n          \"analyzer\": \"email\",\r\n          \"search_analyzer\": \"email\",\r\n           \"copy_to\" : [\r\n            \"pre_email\",\r\n            \"suf_email\"\r\n          ]\r\n        },\r\n        \"pre_email\" : {\r\n            \"type\" : \"text\",\r\n            \"analyzer\" : \"pre_email\",\r\n            \"search_analyzer\": \"pre_email\"\r\n        },\r\n        \"suf_email\" : {\r\n          \"type\" : \"text\",\r\n          \"analyzer\" : \"suf_email\",\r\n          \"search_analyzer\": \"suf_email\"\r\n        },\r\n        \"username\": {\r\n          \"type\": \"text\",\r\n          \"analyzer\": \"email\"\r\n        },\r\n        \"password_hash\": {\r\n           \"type\": \"text\"\r\n        },\r\n        \"password\": {\r\n          \"type\": \"text\"\r\n        },\r\n        \"info_str\": {\r\n          \"type\": \"text\",\r\n          \"analyzer\": \"ik_max_word\",\r\n          \"search_analyzer\": \"ik_max_word\"\r\n        },\r\n        \"db\":{\r\n          \"properties\":{\r\n          \"fileTime\": {\"type\": \"date\"},\r\n          \"sedbName\": {\"type\": \"text\"}\r\n          }\r\n        }\r\n      }\r\n  }\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://127.0.0.1:9200/sedb2",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "9200",
+							"path": [
+								"sedb2"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "分片分配设置",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"transient\": {\r\n        \"cluster.routing.allocation.enable\": \"all\",\r\n        \"cluster.routing.allocation.allow_rebalance\": \"always\"\r\n        // \"cluster.routing.rebalance.enable\": \"all\"\r\n    }\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://127.0.0.1:9200/_cluster/settings",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "9200",
+							"path": [
+								"_cluster",
+								"settings"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "原因分析",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://127.0.0.1:9200/_cluster/allocation/explain",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "9200",
+							"path": [
+								"_cluster",
+								"allocation",
+								"explain"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "强制重新分片分配",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"commands\": [\r\n        {\r\n            \"allocate_stale_primary\": {\r\n                \"index\": \"sedb\",\r\n                \"shard\": 0,\r\n                \"node\": \"node-1\",\r\n                \"accept_data_loss\": true\r\n            }\r\n        }\r\n    ]\r\n}\r\n\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://192.168.3.147:9200/_cluster/reroute",
+							"protocol": "http",
+							"host": [
+								"192",
+								"168",
+								"3",
+								"147"
+							],
+							"port": "9200",
+							"path": [
+								"_cluster",
+								"reroute"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "防止脑裂",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"transient\": {\r\n        \"discovery.zen.minimum_master_nodes\": 2\r\n    }\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://127.0.0.1:9200/_cluster/settings",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "9200",
+							"path": [
+								"_cluster",
+								"settings"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "分片情况",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://192.168.3.147:9200/_shard_stores?pretty",
+							"protocol": "http",
+							"host": [
+								"192",
+								"168",
+								"3",
+								"147"
+							],
+							"port": "9200",
+							"path": [
+								"_shard_stores"
+							],
+							"query": [
+								{
+									"key": "pretty",
+									"value": null
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "节点情况查询",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://192.168.3.147:9200/_cat/nodes?v",
+							"protocol": "http",
+							"host": [
+								"192",
+								"168",
+								"3",
+								"147"
+							],
+							"port": "9200",
+							"path": [
+								"_cat",
+								"nodes"
+							],
+							"query": [
+								{
+									"key": "v",
+									"value": null
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "重新分配失败的分片",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "http://127.0.0.1:9200/_cluster/reroute?retry_failed=true",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "9200",
+							"path": [
+								"_cluster",
+								"reroute"
+							],
+							"query": [
+								{
+									"key": "retry_failed",
+									"value": "true"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "配置慢查询日志",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"template\": \"{INDEX_PATTERN}\",\r\n    \"settings\": {\r\n        \"index.indexing.slowlog.level\": \"INFO\",\r\n        \"index.indexing.slowlog.threshold.index.warn\": \"10s\",\r\n        \"index.indexing.slowlog.threshold.index.info\": \"5s\",\r\n        \"index.indexing.slowlog.threshold.index.debug\": \"2s\",\r\n        \"index.indexing.slowlog.threshold.index.trace\": \"500ms\",\r\n        \"index.indexing.slowlog.source\": \"1000\",\r\n        \"index.search.slowlog.level\": \"INFO\",\r\n        \"index.search.slowlog.threshold.query.warn\": \"10s\",\r\n        \"index.search.slowlog.threshold.query.info\": \"5s\",\r\n        \"index.search.slowlog.threshold.query.debug\": \"2s\",\r\n        \"index.search.slowlog.threshold.query.trace\": \"500ms\",\r\n        \"index.search.slowlog.threshold.fetch.warn\": \"1s\",\r\n        \"index.search.slowlog.threshold.fetch.info\": \"800ms\",\r\n        \"index.search.slowlog.threshold.fetch.debug\": \"500ms\",\r\n        \"index.search.slowlog.threshold.fetch.trace\": \"200ms\"\r\n    },\r\n    \"version\": 1\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://127.0.0.1:9200/_template/txt_number_template",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "9200",
+							"path": [
+								"_template",
+								"txt_number_template"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "查询",
+			"item": [
+				{
+					"name": "查询所有文档",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"query\": {\n        \"bool\": {\n            \"should\": [\n                {\n                    \"term\": {\n                        \"username\": {\n                            \"value\": \"2210774904\",\n                            \"boost\": 2\n                        }\n                    }\n                },\n                {\n                    \"term\": {\n                        \"pre_email\": {\n                            \"value\": \"2210774904\",\n                            \"boost\": 2\n                        }\n                    }\n                },\n                {\n                    \"term\": {\n                        \"info_str\": {\n                            \"value\": \"2210774904\",\n                            \"boost\": 1\n                        }\n                    }\n                }\n            ]\n        }\n    }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "192.168.3.147:9200/sedb/_search",
+							"host": [
+								"192",
+								"168",
+								"3",
+								"147"
+							],
+							"port": "9200",
+							"path": [
+								"sedb",
+								"_search"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "字段匹配查询",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"query\":{\n        \"multi_match\":{\n            \"query\":\"zhangsan\",\n            \"fields\":[\"name\",\"nickname\"]\n        }\n    }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:9200/student/_search",
+							"host": [
+								"localhost"
+							],
+							"port": "9200",
+							"path": [
+								"student",
+								"_search"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "关键字(term) 查询，精确的关键词匹配查询，不对查询条件进行分词。",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"query\": {\n        \"term\": {\n            \"name\": {\n                \"value\": \"zhangsan\"\n            }\n        }\n    }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:9200/student/_search",
+							"host": [
+								"localhost"
+							],
+							"port": "9200",
+							"path": [
+								"student",
+								"_search"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "多关键字查询",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"query\":{\n        \"terms\":{\n            \"name\":[\"zhangsan\",\"lisi\"]\n        }\n    }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:9200/student/_search",
+							"host": [
+								"localhost"
+							],
+							"port": "9200",
+							"path": [
+								"student",
+								"_search"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "指定查询字段",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"_source\": [\n        \"name\",\n        \"nickname\"\n    ],\n    \"query\": {\n        \"terms\": {\n            \"nickname\": [\n                \"zhangsan\"\n            ]\n        }\n    }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:9200/student/_search",
+							"host": [
+								"localhost"
+							],
+							"port": "9200",
+							"path": [
+								"student",
+								"_search"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "过滤字段",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "// includes: 指定显示的字段\n// excludes: 指定不显示的字段\n{\n    \"query\": {\n        \"terms\": {\n            \"nickname\": [\n                \"zhangsan\"\n            ]\n        }\n    },\n    \"_source\": {\n        \"includes\": [\n            \"name\",\n            \"nickname\"\n        ]\n    }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:9200/student/_search",
+							"host": [
+								"localhost"
+							],
+							"port": "9200",
+							"path": [
+								"student",
+								"_search"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "组合查询",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "// `bool`把各种其它查询通过`must`（必须 ）、`must_not`（必须不）、`should`（应该）的方式进行组合\n{\n    \"query\":{\n        \"bool\":{\n            \"must\":[\n                {\n                    \"match\":{\n                        \"name\":\"zhangsan\"\n                    }\n                }\n            ],\n            \"must_not\":[\n                {\n                    \"match\":{\"age\":\"40\"}\n                }\n            ],\n            \"should\":[\n                {\n                    \"match\":{\n                        \"set\":\"男\"\n                    }\n                }\n            ]\n        }\n    }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:9200/student/_search",
+							"host": [
+								"localhost"
+							],
+							"port": "9200",
+							"path": [
+								"student",
+								"_search"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "范围查询",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "// 操作符       说明\n// gt          大于>\n// gte         大于等于>=\n// lt          小于<\n// lte         小于等于<=\n\n{\n    \"query\":{\n        \"range\":{\n            \"age\":{\n                \"gte\":30,\n                \"lte\":35\n            }\n        }\n    }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:9200/student/_search",
+							"host": [
+								"localhost"
+							],
+							"port": "9200",
+							"path": [
+								"student",
+								"_search"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "模糊查询",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "//  更改字符（box → fox）\n//  删除字符（black → lack）\n//  插入字符（sic → sick）\n//  转置两个相邻字符（act → cat）\n{\n    \"query\":{\n        \"fuzzy\":{\n            \"title\":{\n                \"value\":\"zhangsan\"\n            }\n        }\n    }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:9200/student/_search",
+							"host": [
+								"localhost"
+							],
+							"port": "9200",
+							"path": [
+								"student",
+								"_search"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "单字段排序",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"query\": {\n        \"match\": {\n            \"name\": \"zhangsan\"\n        }\n    },\n    \"sort\": [\n        {\n            \"age\": {\n                \"order\": \"desc\"\n            }\n        }\n    ]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:9200/student/_search",
+							"host": [
+								"localhost"
+							],
+							"port": "9200",
+							"path": [
+								"student",
+								"_search"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "多字段排序",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"query\":{\n        \"match_all\":{}\n    },\n    \"sort\":[\n        {\n            \"age\":{\n                \"order\":\"desc\"\n            },\n             \"_score\":{\n                \"order\":\"desc\"\n            }\n        },\n        {\n            \"_score\":{\n                \"order\":\"desc\"\n            }\n        }\n    ]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:9200/student/_search",
+							"host": [
+								"localhost"
+							],
+							"port": "9200",
+							"path": [
+								"student",
+								"_search"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "高亮查询",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "// 查询的同时，加上一个 highlight 属性：\n//  pre_tags：前置标签\n//  post_tags：后置标签\n//  fields：需要高亮的字段\n//  title：这里声明 title 字段需要高亮，后面可以为这个字段设置特有配置，也可以空\n{\n    \"query\": {\n        \"match\": {\n            \"name\": \"zhangsan\"\n        }\n    },\n    \"highlight\": {\n        \"pre_tags\": \"<font color='red'>\",\n        \"post_tags\": \"</font>\",\n        \"fields\": {\n            \"name\": {}\n        }\n    }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:9200/student/_search",
+							"host": [
+								"localhost"
+							],
+							"port": "9200",
+							"path": [
+								"student",
+								"_search"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "分页查询",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "// from：当前页的起始索引，默认从 0 开始。 from = (pageNum - 1) * size\n// size：每页显示多少条\n{\n    \"query\":{\n        \"match_all\":{\n\n        }\n    },\n    \"sort\":[\n        {\n            \"age\":{\n                \"order\":\"desc\"\n            }\n        }\n    ],\n    \"from\":0,\n    \"size\":2\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:9200/student/_search",
+							"host": [
+								"localhost"
+							],
+							"port": "9200",
+							"path": [
+								"student",
+								"_search"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "聚合查询",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "// {\n//     \"aggs\": {\n//         \"max_age\": {\n//             \"max\": {\n//                 \"field\": \"age\"\n//             }\n//         }\n//     },\n//     \"size\": 0\n// }\n// {\n//     \"aggs\": {\n//         \"min_age\": {\n//             \"min\": {\n//                 \"field\": \"age\"\n//             }\n//         }\n//     },\n//     \"size\": 0\n// }\n// {\n//     \"aggs\": {\n//         \"sum_age\": {\n//             \"sum\": {\n//                 \"field\": \"age\"\n//             }\n//         }\n//     },\n//     \"size\": 0\n// }\n// {\n//     \"aggs\": {\n//         \"avg_age\": {\n//             \"avg\": {\n//                 \"field\": \"age\"\n//             }\n//         }\n//     },\n// \"size\":0\n// }\n//对某个字段的值进行去重之后在取总数\n{\n    \"aggs\": {\n        \"distance_age\": {\n            \"cardinality\": {\n                \"field\": \"age\"\n            }\n        }\n    },\n    \"size\": 0\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:9200/student/_search",
+							"host": [
+								"localhost"
+							],
+							"port": "9200",
+							"path": [
+								"student",
+								"_search"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "State聚合",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "// stats 聚合，对某个字段一次性返回 count，max，min，avg 和 sum 五个指标\n{\n    \"aggs\": {\n        \"stats_age\": {\n            \"stats\": {\n                \"field\": \"age\"\n            }\n        }\n    }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:9200/student/_search",
+							"host": [
+								"localhost"
+							],
+							"port": "9200",
+							"path": [
+								"student",
+								"_search"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "桶聚合查询",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "// 桶聚和相当于 sql 中的 group by 语句\n//  terms 聚合，分组统计\n{\n    \"aggs\":{\n        \"age_groupby\":{\n            \"terms\":{\n                \"field\":\"age\"\n            }\n        }\n    },\n    \"size\":0\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:9200/student/_search",
+							"host": [
+								"localhost"
+							],
+							"port": "9200",
+							"path": [
+								"student",
+								"_search"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "多索引原始空数据测试",
+			"item": [
+				{
+					"name": "设置搜索请求别名",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:9200/tweets_1/_alias/tweets_search",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "9200",
+							"path": [
+								"tweets_1",
+								"_alias",
+								"tweets_search"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "设置新文档索引别名",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"url": {
+							"raw": "http://127.0.0.1:9200/tweets_1/_alias/tweets_index",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "9200",
+							"path": [
+								"tweets_1",
+								"_alias",
+								"tweets_index"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "多索引创建",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"actions\": [\r\n        {\r\n            \"add\": {\r\n                \"index\": \"tweets_2\",\r\n                \"alias\": \"tweets_search\"\r\n            }\r\n        },\r\n        {\r\n            \"remove\": {\r\n                \"index\": \"tweets_1\",\r\n                \"alias\": \"tweets_index\"\r\n            }\r\n        },\r\n        {\r\n            \"add\": {\r\n                \"index\": \"tweets_2\",\r\n                \"alias\": \"tweets_index\"\r\n            }\r\n        }\r\n    ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://127.0.0.1:9200/_aliases",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "9200",
+							"path": [
+								"_aliases"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "创建索引2",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"url": {
+							"raw": "http://127.0.0.1:9200/tweets_2",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "9200",
+							"path": [
+								"tweets_2"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "新增数据",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"lisi\",\r\n    \"nickname\": \"李四\",\r\n    \"sex\": \"女\",\r\n    \"age\": 31\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:9200/tweets_index/_doc/1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "9200",
+							"path": [
+								"tweets_index",
+								"_doc",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "查询",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"query\": {\r\n        \"match_all\": {}\r\n    }\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://127.0.0.1:9200/tweets_search/_search",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "9200",
+							"path": [
+								"tweets_search",
+								"_search"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "多索引集群测试",
+			"item": [
+				{
+					"name": "设置查询别名",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:9200/txt_number/_alias/number_search",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "9200",
+							"path": [
+								"txt_number",
+								"_alias",
+								"number_search"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "新增索引",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"settings\": {\r\n        \"number_of_shards\": 10,\r\n        \"number_of_replicas\": 1\r\n    },\r\n    \"mappings\": {\r\n        \"properties\": {\r\n            \"number\": {\r\n                \"type\": \"text\"\r\n            },\r\n            \"name\":{\r\n                \"type\": \"keyword\"\r\n            }\r\n        }\r\n    }\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://127.0.0.1:9200/txt_number2",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "9200",
+							"path": [
+								"txt_number2"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "新增文档",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"zhangsan\",\r\n    \"number\": \"123456\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://127.0.0.1:9200/txt_number2",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "9200",
+							"path": [
+								"txt_number2"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "多索引设置",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"actions\": [\r\n        {\r\n            \"add\": {\r\n                \"index\": \"txt_number2\",\r\n                \"alias\": \"number_search\"\r\n            }\r\n        },\r\n        {\r\n            \"remove\": {\r\n                \"index\": \"txt_number\",\r\n                \"alias\": \"number_index\"\r\n            }\r\n        },\r\n        {\r\n            \"add\": {\r\n                \"index\": \"txt_number2\",\r\n                \"alias\": \"number_index\"\r\n            }\r\n        }\r\n    ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://127.0.0.1:9200/_aliases",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "9200",
+							"path": [
+								"_aliases"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "查询",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"query\": {\r\n        \"match_all\": {}\r\n    }\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://192.168.3.147:9200/api/_settings",
+							"protocol": "http",
+							"host": [
+								"192",
+								"168",
+								"3",
+								"147"
+							],
+							"port": "9200",
+							"path": [
+								"api",
+								"_settings"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "备份快照",
+			"item": [
+				{
+					"name": "设置快照存储库",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "//在进行快照设置之前需要在elasticsearch.yml配置存储库位置添加该参数path.repo: [\"D:\\\\eleasticSearchs\\\\snapshot_repo\"]\r\n\r\n{\r\n  \"type\": \"fs\",\r\n  \"settings\": {\r\n    \"location\": \"D:\\\\eleasticSearchs\\\\snapshot_repo\\\\my_backup\"\r\n  }\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://127.0.0.1:9200/_snapshot/my_backup",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "9200",
+							"path": [
+								"_snapshot",
+								"my_backup"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "验证集群各个节点是否可以使用这个仓库",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "http://127.0.0.1:9200/_snapshot/my_backup/_verify",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "9200",
+							"path": [
+								"_snapshot",
+								"my_backup",
+								"_verify"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "保存集群下所有索引快照  格式: _snapshot/仓库名称/快照名称",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"url": {
+							"raw": "http://127.0.0.1:9200/_snapshot/my_backup/snapshot_1",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "9200",
+							"path": [
+								"_snapshot",
+								"my_backup",
+								"snapshot_1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "保存集群下指定索引快照",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"indices\": \"tweets_1\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://127.0.0.1:9200/_snapshot/my_backup/snapshot_2?wait_for_completion=true",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "9200",
+							"path": [
+								"_snapshot",
+								"my_backup",
+								"snapshot_2"
+							],
+							"query": [
+								{
+									"key": "wait_for_completion",
+									"value": "true"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "获取指定索引快照状态",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://127.0.0.1:9200/_snapshot/my_backup/snapshot_2/_status",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "9200",
+							"path": [
+								"_snapshot",
+								"my_backup",
+								"snapshot_2",
+								"_status"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "snapshot还原  如果集群中已有快照的索引那就会报索引已存在的错误",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "http://127.0.0.1:9200/_snapshot/my_backup/snapshot_2/_restore",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "9200",
+							"path": [
+								"_snapshot",
+								"my_backup",
+								"snapshot_2",
+								"_restore"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "如果在不替换现有数据的前提下，恢复老数据来验证内容",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "//如果在不替换现有数据的前提下，恢复老数据来验证内容\r\n{\r\n  \"indices\": \"txt_number\",\r\n  \"ignore_unavailable\": true,\r\n  \"include_global_state\": false,\r\n  \"rename_pattern\": \"txt_number\",\r\n  \"rename_replacement\": \"restore_txt_number2\",\r\n  \"include_aliases\": false\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "snapshot/my_backup/snapshot_2/_restore",
+							"host": [
+								"snapshot"
+							],
+							"path": [
+								"my_backup",
+								"snapshot_2",
+								"_restore"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "删除快照",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://127.0.0.1:9200/_snapshot/my_backup/snapshot_2",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "9200",
+							"path": [
+								"_snapshot",
+								"my_backup",
+								"snapshot_2"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "删除多个快照",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://127.0.0.1:9200/_snapshot/my_backup/snapshot_1,snapshot_2",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "9200",
+							"path": [
+								"_snapshot",
+								"my_backup",
+								"snapshot_1,snapshot_2"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "过期快照清理",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "http://127.0.0.1:9200/_snapshot/my_backup/_cleanup",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "9200",
+							"path": [
+								"_snapshot",
+								"my_backup",
+								"_cleanup"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "其他配置",
+			"item": [
+				{
+					"name": "创建索引",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"settings\":{},\n    \"mappings\":{\n        \"properties\":{\n            \"name\":{\n                \"type\":\"text\",\n                \"index\":true\n            },\n            \"age\":{\n                \"type\":\"long\",\n                \"index\": true\n            },\n            \"sex\":{\n                \"type\":\"text\",\n                \"index\":false\n            }\n        }\n    }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://127.0.0.1:9200/student",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "9200",
+							"path": [
+								"student"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "查看映射",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "192.168.3.147:9200/service/_search",
+							"host": [
+								"192",
+								"168",
+								"3",
+								"147"
+							],
+							"port": "9200",
+							"path": [
+								"service",
+								"_search"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "查看所有索引信息",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:9200/_cat/indices?v",
+							"host": [
+								"localhost"
+							],
+							"port": "9200",
+							"path": [
+								"_cat",
+								"indices"
+							],
+							"query": [
+								{
+									"key": "v",
+									"value": null
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "新增文档",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"lisi\",\n    \"nickname\": \"李四\",\n    \"sex\": \"女\",\n    \"age\": 31\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:9200/student/_doc/1002",
+							"host": [
+								"localhost"
+							],
+							"port": "9200",
+							"path": [
+								"student",
+								"_doc",
+								"1002"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "设置别名",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"url": {
+							"raw": "http://127.0.0.1:9200/txt_number3/_alias/txt_number",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "9200",
+							"path": [
+								"txt_number3",
+								"_alias",
+								"txt_number"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "原index数据迁移",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"source\": {\r\n        \"index\": \"txt_number\",\r\n        \"size\": 10000\r\n    },\r\n    \"dest\": {\r\n        \"index\": \"txt_number2\"\r\n    }\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://127.0.0.1:9200/_reindex?slices=5&refresh",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "9200",
+							"path": [
+								"_reindex"
+							],
+							"query": [
+								{
+									"key": "slices",
+									"value": "5"
+								},
+								{
+									"key": "refresh",
+									"value": null
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "设置副本数量",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"number_of_replicas\": 1\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://127.0.0.1:9200/txt_number2/_settings",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "9200",
+							"path": [
+								"txt_number2",
+								"_settings"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "清除缓存",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "http://127.0.0.1:9200/txt_number/_cache/clear",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "9200",
+							"path": [
+								"txt_number",
+								"_cache",
+								"clear"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Refresh刷新",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "http://127.0.0.1:9200/txt_number/_flush",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "9200",
+							"path": [
+								"txt_number",
+								"_flush"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "索引模板设计",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"index_patterns\": [\r\n    \"test_index_*\",\r\n    \"test_*\"\r\n  ],\r\n  \"settings\": {\r\n    \"number_of_shards\": 1,\r\n    \"number_of_replicas\": 1,\r\n    \"max_result_window\": 100000,\r\n    \"refresh_interval\": \"30s\"\r\n  },\r\n  \"mappings\": {\r\n    \"properties\": {\r\n      \"id\": {\r\n        \"type\": \"long\"\r\n      },\r\n      \"title\": {\r\n        \"type\": \"keyword\"\r\n      },\r\n      \"content\": {\r\n        \"analyzer\": \"ik_max_word\",\r\n        \"type\": \"text\",\r\n        \"fields\": {\r\n          \"keyword\": {\r\n            \"ignore_above\": 256,\r\n            \"type\": \"keyword\"\r\n          }\r\n        }\r\n      },\r\n      \"available\": {\r\n        \"type\": \"boolean\"\r\n      },\r\n      \"review\": {\r\n        \"type\": \"nested\",\r\n        \"properties\": {\r\n          \"nickname\": {\r\n            \"type\": \"text\"\r\n          },\r\n          \"text\": {\r\n            \"type\": \"text\"\r\n          },\r\n          \"stars\": {\r\n            \"type\": \"integer\"\r\n          }\r\n        }\r\n      },\r\n      \"publish_time\": {\r\n        \"type\": \"date\",\r\n        \"format\": \"yyyy-MM-dd HH:mm:ss||yyyy-MM-dd||epoch_millis\"\r\n      },\r\n      \"expected_attendees\": {\r\n        \"type\": \"integer_range\"\r\n      },\r\n      \"ip_addr\": {\r\n        \"type\": \"ip\"\r\n      },\r\n      \"suggest\": {\r\n        \"type\": \"completion\"\r\n      }\r\n    }\r\n  }\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://127.0.0.1:9200/_template/test_template",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "9200",
+							"path": [
+								"_template",
+								"test_template"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "配置磁盘使用率",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "//persistent 永久性 \r\n//transient 临时更改\r\n{\r\n    \"transient\": {\r\n        \"cluster.routing.allocation.disk.watermark.low\": \"90%\",\r\n        \"cluster.routing.allocation.disk.watermark.high\": \"95%\",\r\n        \"cluster.routing.allocation.disk.watermark.flood_stage\": \"98%\",\r\n        \"cluster.info.update.interval\": \"1m\"\r\n    }\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://127.0.0.1:9200/_cluster/settings",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "9200",
+							"path": [
+								"_cluster",
+								"settings"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "查看当前磁盘使用率配置",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://192.168.3.211:9200/_cluster/settings",
+							"protocol": "http",
+							"host": [
+								"192",
+								"168",
+								"3",
+								"211"
+							],
+							"port": "9200",
+							"path": [
+								"_cluster",
+								"settings"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "查询索引配置信息",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://127.0.0.1:9200/txt_number/_settings",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "9200",
+							"path": [
+								"txt_number",
+								"_settings"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "查看集群配置信息",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://192.168.3.147:9200/_cluster/settings",
+							"protocol": "http",
+							"host": [
+								"192",
+								"168",
+								"3",
+								"147"
+							],
+							"port": "9200",
+							"path": [
+								"_cluster",
+								"settings"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "查看集群中等待中的任务",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://192.168.3.147:9200/_cluster/pending_tasks",
+							"protocol": "http",
+							"host": [
+								"192",
+								"168",
+								"3",
+								"147"
+							],
+							"port": "9200",
+							"path": [
+								"_cluster",
+								"pending_tasks"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "_cat/indices底层所有的文档数量",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://192.168.3.147:9200/_cat/indices?v",
+							"protocol": "http",
+							"host": [
+								"192",
+								"168",
+								"3",
+								"147"
+							],
+							"port": "9200",
+							"path": [
+								"_cat",
+								"indices"
+							],
+							"query": [
+								{
+									"key": "v",
+									"value": null
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "cat/count 已经删除的文档即使还没有物理删除（merge）也不会统计",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://127.0.0.1:9200/_cat/count/txt_number?v",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "9200",
+							"path": [
+								"_cat",
+								"count",
+								"txt_number"
+							],
+							"query": [
+								{
+									"key": "v",
+									"value": null
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "查看节点状态",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://127.0.0.1:9200/_cat/shards",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "9200",
+							"path": [
+								"_cat",
+								"shards"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "查看文档数量",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://192.168.3.147:9200/_cat/count/sedb_20220117?v",
+							"protocol": "http",
+							"host": [
+								"192",
+								"168",
+								"3",
+								"147"
+							],
+							"port": "9200",
+							"path": [
+								"_cat",
+								"count",
+								"sedb_20220117"
+							],
+							"query": [
+								{
+									"key": "v",
+									"value": null
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "段合并配置",
+			"item": [
+				{
+					"name": "段合并 IO速率设置",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"persistent\" : {\r\n        \"indices.store.throttle.max_bytes_per_sec\" : \"100mb\"  //默认为20MB/s 但是如果是SSD则可以考虑在100MB~200MB之间\r\n    }\r\n}\r\n\r\n// 如果正在进行批量导入并且根本不关心搜索，则可以完全禁用合并限制。这将允许索引以磁盘允许的速度运行\r\n// {\r\n//     \"transient\" : {\r\n//         \"indices.store.throttle.type\" : \"none\" \r\n//     }\r\n// }",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://127.0.0.1:9200/_cluster/settings",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "9200",
+							"path": [
+								"_cluster",
+								"settings"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "段合并",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "http://127.0.0.1:9200/txt_number/_forcemerge?max_num_segments=1",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "9200",
+							"path": [
+								"txt_number",
+								"_forcemerge"
+							],
+							"query": [
+								{
+									"key": "max_num_segments",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}

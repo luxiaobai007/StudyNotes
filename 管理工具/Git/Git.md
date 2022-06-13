@@ -124,9 +124,26 @@ git merge [branch]
 
 # 现实场景
 
-Git 提交(commit)之后,想要撤回怎么办
+### Git 提交(commit)之后,想要撤回怎么办
 
 ```shell
 git reset --soft HEAD^
+```
+
+
+
+### 合并分支
+
+有两个分支master和dev
+
+dev分支版本高于master分支.如何进行合并
+
+```shell
+##切换为master
+git checkout master
+##进行合并
+git merge dev
+##最后推送远程
+git push origin master
 ```
 

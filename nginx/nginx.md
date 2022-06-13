@@ -570,3 +570,146 @@ nginx有一个master,  有4个worker,每个worker支持最大的连接数据1024
 \##普通的静态访问最大并发数是:worker_connections * worker_processes / 2,
 
 \##而如果是http作为反向代理,最大并发数:worker_connections * worker_processes / 4
+
+
+
+
+
+
+
+```nginx
+worker_processes  1;
+# 错误日志路径，根据本机情况选择
+error_log  logs/error.log;
+events {
+    worker_connections  1024;
+}
+
+http {
+    include       mime.types;
+    default_type  application/octet-stream;
+
+    # 日志格式化，相关参数可上网查找
+    log_format  main  '$remote_addr - $remote_user [$time_local] "$request" '
+                      '$status $body_bytes_sent "$http_referer" '
+                      '"$http_user_agent" "$http_x_forwarded_for"';
+    sendfile        on;
+    keepalive_timeout  65;
+    server {
+        listen       90;
+    server_name  127.0.0.1;
+
+        # 正常日志路径，根据本机情况选择
+        access_log  logs/access.log;
+        # 前端静态页面根目录 
+        root "F:/EC3_TEST/ec-demo/www";
+        index  index.html index.htm;#默认起始页
+        # 后端代理转发
+        location ^~ /ec-demo {
+            proxy_pass http://127.0.0.1:8080/ec-demo-test;
+            break;
+        }
+
+        location ~ .*\.(gif|jpg|jpeg|png|bmp|swf|ico)$ {
+            break;
+        }
+
+        location ~ .*\.(js|css|map|json|html)$ {
+            break;
+        }
+
+        location ~ .*\.(woff|ttf|eot|svg|woff2)$ {
+            break;
+        }
+        # 静态页面url后面带上.html后缀
+        location / {
+            rewrite   ^(.*?)/?$ /$1.html;
+            break;
+        }
+    }
+}
+
+```
+
+
+
+```nginx
+
+#user  nobody;
+worker_processes  1;
+
+#error_log  logs/error.log;
+#error_log  logs/error.log  notice;
+#error_log  logs/error.log  info;
+
+#pid        logs/nginx.pid;
+
+
+events {
+    worker_connections  1024;
+}
+
+
+http {
+    include       mime.types;
+    default_type  application/octet-stream;
+
+    #log_format  main  '$remote_addr - $remote_user [$time_local] "$request" '
+    #                  '$status $body_bytes_sent "$http_referer" '
+    #                  '"$http_user_agent" "$http_x_forwarded_for"';
+
+    #access_log  logs/access.log  main;
+
+    sendfile        on;
+    #tcp_nopush     on;
+
+    #keepalive_timeout  0;
+    keepalive_timeout  65;
+
+    #gzip  on;
+    server {
+      listen 80;
+      autoindex on;
+      gzip on;
+      gzip_min_length 1k;
+      gzip_comp_level 9;
+      gzip_types text/plain text/css text/javascript application/json application/javascript application/x-javascript application/xml;
+      gzip_vary on;
+      gzip_disable "MSIE [1-6]\.";
+
+      charset utf-8;
+      #root /Users/marcos/Documents/工作文档/初始化/ec-demo/www;
+      root /Users/lushengyang/Desktop/gillion/ec-demo/www;
+      location ^~ /ec-demo {
+            proxy_set_header Host $host;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            #proxy_pass  http://backendUpstream/http/ec-demo;
+            proxy_pass http://127.0.0.1:8080/ec-demo;
+            break;
+         }
+
+        location ~ .*\.(gif|jpg|jpeg|png|bmp|swf)$ {
+          break;
+        }
+
+        location ~ .*\.(js|css|map|json|html)$ {
+          break;
+        }
+
+        location ~ .*\.(js|css|map|json|html)$ {
+          break;
+        }
+
+        location ~ .*\.(woff|ttf)$ {
+          break;
+        }
+
+        location / {
+          rewrite   ^(.*?)/?$ /$1.html;
+              try_files $uri $uri/ /index.html;
+          break;
+        }
+      }
+}
+```
+

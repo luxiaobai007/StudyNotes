@@ -64,6 +64,101 @@ grant all privileges on *.* to root@'%'identified by 'root';
 
 
 
+### 内网安装
+
+下载[MySQL-client-5.5.52-1.linux2.6.x86_64.rpm](https://downloads.mysql.com/archives/get/p/23/file/MySQL-client-5.5.52-1.linux2.6.x86_64.rpm) [MySQL-server-5.5.52-1.linux2.6.x86_64.rpm](https://downloads.mysql.com/archives/get/p/23/file/MySQL-server-5.5.52-1.linux2.6.x86_64.rpm)
+
+```shell
+rpm -ivh MySQL-server-5.5.52-1.linux2.6.x86_64.rpm
+rpm -ivh MySQL-client-5.5.52-1.linux2.6.x86_64.rpm
+ps -ef | grep mysql
+##查看用户组
+cat /etc/passwd | grep mysql
+cat /etc/group | grep mysql
+mysqladmin --version
+###mysql后台启动
+service mysql start
+###设置密码
+/usr/bin/mysqladmin -u root password 123456
+###设置开机自启动
+chkconfig mysql on
+chkconfig --list | grep mysql
+###查看运行级别
+cat /etc/inittab
+ntsysv
+```
+
+
+
+![image-20220125155316312](/Users/lushengyang/Library/Application Support/typora-user-images/image-20220125155316312.png)
+
+![image-20220125153709103](/Users/lushengyang/Library/Application Support/typora-user-images/image-20220125153709103.png)
+
+
+
+```shell
+##CentOS卸载mysql
+rpm -qa | grep -i mysql #查看mysql所有已安装的组件
+yum -y remove mysql-*　
+find / -name mysql #查看与mysql相关的目录
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

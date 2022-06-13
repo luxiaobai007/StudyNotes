@@ -35,7 +35,7 @@ MVVM模式的核心,它是连接view和model的桥梁.2个方向
 1. 将Model转化为View,即将后端传递的数据转化为所看到的页面.实现方式:数据绑定
 2. 将View转化为Model,即将所看到的页面转化成后端的数据.实现方式:DOM事件监听
 
-![mvvm](/Users/lushengyang/Desktop/LSY/StudeyNotes/image/mvvm.png)
+![mvvm](http://qiliu.luxiaobai.cn/img/mvvm.png)
 
 这两个方向都实现的,我们称之为**数据的双向绑定.**
 
@@ -47,11 +47,11 @@ ViewModel通过双向数据绑定将View层和Model层连接起来,使得View层
 
 ## **Vue.js中MVVM的体现**
 
-![mvvm2](/Users/lushengyang/Desktop/LSY/StudeyNotes/image/mvvm2.png)
+![mvvm2](http://qiliu.luxiaobai.cn/img/mvvm2.png)
 
 Vue.js的实现方式，对数据（Model）进行"劫持"，当数据变动时，数据会出发劫持时绑定的方法，对视图进行更新.
 
-![mvvm3](/Users/lushengyang/Desktop/LSY/StudeyNotes/image/mvvm3.png)
+![mvvm3](http://qiliu.luxiaobai.cn/img/mvvm3.png)
 
 ViewModel通过双向数据绑定把View层和Model层连接了起来,而View和Model之间的同步工作完全是自动的,无需人为干预.
 

@@ -1,0 +1,84 @@
+kind: pipeline
+branches: [master, rc, dev]
+
+trigger:
+  branch:
+    - master
+    - rc
+
+steps:
+  # 1.gradle打包
+- name: gradle-build-rc
+pull: if-not-exists
+image: gradle:jdk8
+volumes:
+	- name: cache
+	path: /root/.gradle
+#挂载宿主机的目录
+	- name: data
+	path: /home
+	 commands:
+		- pwd
+		- cp /home/antl-backend/application-dev.properties src/main/resources/application-prod.properties
+		- gradle build -x test
+		- mv `ls -1r build/libs/*.jar | head -n 1` /drone/src/build/libs/backend.jar
+when:
+	branch:
+		- rc
+#2.项目打包部署
+- name: deploy-rc
+	image: drillster/drone-rsync
+	volumes:
+		- name: hosts
+		path: /etc/hosts
+	- name: data
+		path: /home
+	settings:
+		hosts:
+			- antl-dev
+		user:
+			from_secret: ubuntu
+		key:
+			from_secret: ubuntu_key
+		delete: true
+		source: /drone/src/build/libs/.
+		target: /home/ubuntu/backend
+		include: [ "backend.jar"]  只需要编译出来java 即可
+		exclude: [ "*" ]
+		script:
+			- pwd
+			- echo "正在停止旧线程"
+			- sudo systemctl restart antl.service
+			- echo "正在重启服务器.. 请等待启动完成"
+when:
+	branch:
+		- rc
+
+  #3. 钉钉通知
+- name: dingtalk
+image: guoxudongdocker/drone-dingtalk
+settings:
+	token:
+	from_secret: token1
+	message_color: true
+	type: markdown
+	message_pic: true
+	sha_link: true
+	when:
+	status:
+		- success
+		- changed
+		- failure
+
+# 挂载的主机卷，可以映射到docker容器中
+volumes:
+ # maven构建缓存
+	- name: cache
+	host:
+	path: /var/lib/cache
+																									- name: data
+																										host:
+																											  path: /home/ubuntu/project/antl   这边需要改成drone服务器上项目对应的文件路径
+																												- name: hosts
+																													host:
+																														  path: /etc/hosts

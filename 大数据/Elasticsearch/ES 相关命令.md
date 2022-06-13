@@ -1,20 +1,5 @@
 # ES 相关命令
 
-
-
-查询方式
-
-- term: 单词/词元查询
-- match： 分词查询（模糊匹配）
-- multi_match： 多字段匹配
-- range： 范围查询
-- exists： 存在
-- missing： 不存在
-- prefix： 前缀匹配
-- wildcard： 通配符匹配，使用*代表0到N个，使用？代表1个
-
-
-
 ```shell
 PUT /megacorp/employee/2
 {

@@ -30,3 +30,22 @@ HashMap时间复杂度可以达到O(1)，但是呢因为HashMap数据是在内�
 
 缺点是有一定的误识别率和删除困难。
 
+
+
+### Redis内存溢出策略
+
+noeviction(默认策略):拒绝所有写入操作并返回客户端错误信息（error) OOM command not
+
+allowed when used memory,只响应读操作。
+
+\1. volatile-lru:根据LRU算法删除设置了超时属性（expire)的键，直到腾出足够空间为止。如果没有可
+
+删除的键对象，回退到noeviction策略。
+
+\2. allkeys-lru:根据LRU算法删除键，不管数据有没有设置超时属性， 直到腾出足够空间为止。
+
+\3. allkeys-random:随机删除所有键，直到腾出足够空间为止。
+
+\4. volatile-random:随机删除过期键，直到腾出足够空间为止。
+
+\5. volatile-tth根据键值对象的ttl属性，删除最近将要过期数据。如果没有，回退到noeviction策略。

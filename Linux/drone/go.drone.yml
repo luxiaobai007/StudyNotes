@@ -1,0 +1,81 @@
+kind: pipeline
+branches: [master, rc]
+
+trigger:
+  branch:
+    - master
+    - rc
+
+steps:
+   #编译 拷贝二进制文件等相关文件到指定目录
+     - name: go-build
+	image: golang:1.15.8
+	environment:
+	CGO_ENABLED: 1
+	GOPROXY: https://goproxy.io,direct
+	volumes:
+		- name: cache
+	path: /go
+		- name: data
+		path: /home
+	commands:
+		- go build -ldflags "-s -w" -o ./build/antl-node
+		- ls -al
+# 将打包后的文件复制到宿主机映射目录
+
+# 拷贝相关文件到目标主机
+- name: deploy-rc
+image: drillster/drone-rsync
+volumes:
+	- name: hosts
+path: /etc/hosts
+	- name: data
+path: /home
+settings:
+	hosts:
+		- 192.168.3.xxx
+	ports:
+		- 22
+	user: ubuntu
+	key:
+		from_secret: deploy_key
+	delete: false
+	source: /drone/src/build/.                 #本机
+	target: /home/ubuntu/antl-node             #远程主机
+include: [ "*" ]
+script:
+	- sudo systemctl restart antl-node.service
+	- sleep 1s
+	- echo "正在重启服务器.. 请等待启动完成"
+when:
+	branch:
+		- rc
+
+#4. 钉钉通知
+- name: dingtalk
+	image: guoxudongdocker/drone-dingtalk
+settings:
+	token:
+	from_secret: token
+	message_color: true
+	type: markdown
+	message_pic: true
+	sha_link: true
+	when:
+status:
+	- success
+	- changed
+	- failure
+
+# 挂载的主机卷，可以映射到docker容器中
+volumes:
+# maven构建缓存
+	- name: cache
+		host:
+		path: /var/lib/cache
+			- name: data
+		host:
+			path: /home/ubuntu/project/antl/antl-auto
+		- name: hosts
+		host:
+		path: /etc/hosts

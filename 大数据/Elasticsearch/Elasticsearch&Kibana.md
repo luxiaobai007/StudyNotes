@@ -1,3 +1,7 @@
+[toc]
+
+
+
 # Elasticsearch
 
 ## 简介
@@ -79,6 +83,8 @@ elasticsearch-service manager			//启动服务
 
 ### JVM配置
 
+默认情况下，弹性搜索会根据节点的角色和总内存自动设置JVM堆大小。建议大多数生产环境中的默认尺寸
+
 JVM参数设置在ES_HOME/conf/jvm.options（推荐）中进行修改或者ES_JAVA_HOME环境变量来修改
 
 [官网介绍了如何设置堆大小](https://www.elastic.co/guide/en/elasticsearch/reference/current/heap-size.html)
@@ -88,6 +94,88 @@ JVM参数设置在ES_HOME/conf/jvm.options（推荐）中进行修改或者ES_JA
 > ES 使用 `Xms(minimum heap size)` 和 `Xmx(maxmimum heap size)` 设置堆大小。你应该将这两个值设为同样的大小。
 >
 > **`Xms` 和 `Xmx` 不能大于你物理机内存的 50%。**
+
+
+
+### [SLM自动备份](https://www.elastic.co/guide/en/elasticsearch/reference/current/getting-started-snapshot-lifecycle-management.html)
+
+#### 配置快照存储库
+
+在`elasticsearch.yml`配置存储库位置添加该参数`path.repo: ["D:\\eleasticSearchs\\snapshot_repo"]`
+
+```http
+PUT /_snapshot/my_backup
+{
+  "type": "fs",
+  "settings": {
+    "location": "D:\\eleasticSearchs\\snapshot_repo\\my_backup"
+  }
+}
+
+#验证集群各个节点是否可以使用这个仓库
+POST /_snapshot/my_backup/_verify
+
+#保存集群下所有索引快照
+#格式: _snapshot/仓库名称/快照名称
+PUT _snapshot/my_backup/snapshot_1
+
+
+##保存集群下指定索引快照
+PUT _snapshot/my_backup/snapshot_2?wait_for_completion=true
+{
+    "indices": "txt_number"
+}
+
+#获取指定索引快照状态
+GET _snapshot/my_backup/snapshot_2/_status
+```
+
+>**不要害怕配置频繁拍摄快照的策略。快照是增量的，有可能很多快照依赖于过去的段并可以有效地利用存储。所以在仓库下的文件不要手动删除**
+
+
+
+#### snapshot还原
+
+只需要在集群的快照ID后加上`_restore`即可
+
+```http
+POST _snapshot/my_backup/snapshot_2/_restore
+```
+
+如果集群中已有快照的索引那就会报索引已存在的错误
+
+**如果在不替换现有数据的前提下，恢复老数据来验证内容，或者做其他处理。可以从快照里恢复单个索引并提供一个替换的名称：** 
+
+```http
+POST _snapshot/my_backup/snapshot_2/_restore
+{
+  "indices": "txt_number",
+  "ignore_unavailable": true,
+  "include_global_state": false,
+  "rename_pattern": "txt_number",
+  "rename_replacement": "restore_txt_number2",
+  "include_aliases": false
+}
+```
+
+==数据还原时，需要等待==默认情况下每个节点的节流恢复速度默认为40mb/s,每个系欸但的快照速率限制，默认为40mb/s
+
+
+
+**其他**
+
+```http
+##删除快照
+DELETE _snapshot/my_backup/snapshot_2
+
+##删除多个
+DELETE _snapshot/my_backup/snapshot_1,snapshot_2
+
+##过期快照清理
+POST _snapshot/my_backup/_cleanup
+```
+
+
 
 
 
@@ -314,7 +402,7 @@ PUT job
 
 ### 中文分词器插件es-ik安装
 
-- 点击[ES-ik](https://github.com/medcl/elasticsearch-analysis-ik/releases/tag/v7.15.1)下载压缩包，解压到ES\plugin目录下
+- 点击[ES-ik](https://github.com/medcl/elasticsearch-analysis-ik/releases/tag/v7.15.1)下载压缩包，解压到ES\plugin\ik目录下
 - 重启ES即可
 
 
@@ -401,6 +489,188 @@ xpack.security.enabled: false
 - **Top hits Aggregation**：求前几
 - **Value Count Aggregation**：求总数
 - ................
+
+
+
+
+
+## 批量操作
+
+
+
+1. bulk：ES本地支持的批量导入方式，如果是txt文本需要进行数据格式转换为json文件
+2. logstash： ELK生态中的另一个产品，可以将数据文本 转换为ES的数据源
+3. SpringData-ES的Java方式
+
+
+
+### mget
+
+这个命令的话直接上代码比较容易理解的
+
+```http
+PUT example/_mapping
+{
+  "properties": {
+    "id": {"type": "long"},
+    "name": {"type": "text"},
+    "counter": {"type": "integer"},
+    "tags": {"type": "text"}
+  }
+}
+
+POST example/_doc/1
+{
+    "id": 1,
+    "name": "admin",
+    "counter": 1,
+    "tags": ["gray"]
+}
+POST example/_doc/2
+{
+    "id": 2,
+    "name": "zhangsan",
+    "counter": 1,
+    "tags": ["black"]
+}
+POST example/_doc/3
+{
+    "id": 3,
+    "name": "lisi",
+    "counter": 1,
+    "tags": ["purple"]
+}
+
+PUT example_test/_mapping
+{
+  "properties": {
+    "id": {"type": "long"},
+    "name": {"type": "text"},
+    "counter": {"type": "integer"},
+    "tags": {"type": "text"}
+  }
+}
+
+POST example_test/_doc/1
+{
+    "id": 1,
+    "name": "test-admin",
+    "counter": 1,
+    "tags": ["gray"]
+}
+POST example_test/_doc/2
+{
+    "id": 2,
+    "name": "test-zhangsan",
+    "counter": 1,
+    "tags": ["black"]
+}
+POST example_test/_doc/3
+{
+    "id": 3,
+    "name": "test-lisi",
+    "counter": 1,
+    "tags": ["purple"]
+}
+GET example/_search
+GET _mget
+{
+    "docs": [
+        {
+            "_index": "example",
+            "_id": "1"
+        },
+        {
+            "_index": "example",
+            "_id": "2"
+        },
+        {
+            "_index": "example_test",
+            "_id": "1"
+        },
+        {
+            "_index": "example_test",
+            "_id": "2"
+        }
+    ]
+}
+GET example/_mget
+{
+    "docs": [
+        {
+            "_id": "1"
+        },
+        {
+            "_id": "2"
+        },
+        {
+            "_id": "3"
+        }
+    ]
+}
+```
+
+
+
+### Bulk processtor
+
+> BulkProcessor提供了一个简单的接口来实现批量提交请求（多种请求，如IndexRequest，DeleteRequest），且可根据请求数量、大小或固定频率进行flush提交。flush方式可选同步或异步
+
+bulk request 会加载到内存里，如果太大的话，性能反而会下降，因此需要反复尝试一个最佳的 bulk size。一般从 1000~5000 条数据开始，尝试逐渐增加。另外，如果看大小的话，最好是在 5~15 MB 之间
+
+#### 官方示例
+
+```java
+public BulkProcessor bulkProcessor() throws UnknownHostException {
+        Settings settings = Settings.builder().put("cluster.name", "elasticsearch").build();
+        //客户端连接的采用端口为9300，否则获取不到对应的节点
+        Client client = new PreBuiltTransportClient(settings)
+                .addTransportAddress(new TransportAddress(InetAddress.getByName("localhost"), Integer.parseInt("9300")));
+
+        BulkProcessor bulkProcessor = BulkProcessor.builder(
+                        client,//添加搜索客户端
+                        new BulkProcessor.Listener() {
+                            @Override
+                            public void beforeBulk(long executionId,
+                                                   BulkRequest request) {
+                                //批量执行之前被调用
+
+                            }
+
+                            @Override
+                            public void afterBulk(long executionId,
+                                                  BulkRequest request,
+                                                  BulkResponse response) {
+                                //批量执行之后被调用 检查是否有一些失败的请求
+
+                            }
+
+                            @Override
+                            public void afterBulk(long executionId,
+                                                  BulkRequest request,
+                                                  Throwable failure) {//
+                                System.out.println("error>>> " + failure);
+                            }
+                        })
+                .setBulkActions(10000)//10000个请求执行一次批量请求
+                .setBulkSize(new ByteSizeValue(1, ByteSizeUnit.GB))//每1G冲洗一次批量
+                .setFlushInterval(TimeValue.timeValueSeconds(5))//无论请求数量多少，每5秒冲洗一次批量
+                .setConcurrentRequests(1)//设置并发请求的数量,值 0 表示仅允许执行单个请求,值 1 表示允许在累积新的批量请求时执行 1 个并发请求。
+                .setBackoffPolicy(
+                        /**
+                         *
+                         * 设置一个自定义的退订策略，最初将等待 100m，成倍增加，重述多达三次。
+                         * 每当一个或多个批量项目请求失败时，都会尝试重试，这表明可用于处理请求的计算资源太少。
+                         * 要禁用后退，通过。EsRejectedExecutionExceptionBackoffPolicy.noBackoff()
+                         */
+                        BackoffPolicy.exponentialBackoff(TimeValue.timeValueMillis(100), 3))
+                .build();
+
+        return bulkProcessor;
+    }
+```
+
+
 
 
 
@@ -618,11 +888,11 @@ xpack.security.enabled: false
 ### 如何避免？
 
 1. ES7.0之前，限定一个选举条件，设置quorum(仲裁)， 只有在Master eligishble 节点数大于quorum时，才能进行选举
-   - quorum=（master节点数/2) + 1
+   - `quorum=（master节点数/2) + 1`
    - 当3个master eligible时，设置discovery.zen.minimum_master_nodes为2，既避免脑裂
 2. ES7.0之后，无需此配置
-   - 移除minimum_master_nodes参数，让Elasticsearch自己选择可以形成仲裁的节点
-   - 典型的主节点选举现在只需要很短的时间就可以晚餐。集群的伸缩变得更安全、更容易、并且可能造成丢失数据的系统配置选项更少了
+   - 移除`minimum_master_nodes`参数，让Elasticsearch自己选择可以形成仲裁的节点
+   - 典型的主节点选举现在只需要很短的时间就可以完成。集群的伸缩变得更安全、更容易、并且可能造成丢失数据的系统配置选项更少了
    - 节点更清楚的记录它们的状态，有助于判断为什么它们不能加入集群或为什么无法选举出主节点
 
 
@@ -651,8 +921,8 @@ xpack.security.enabled: false
 `shard = hash(_routing)%number_of_primary_shards(主分片数量)`
 
 - hash算法确保文档均匀分散到分片中
-- 默认的_routing值是文档id
-- 可以自行限定_ronting数值，例如相同国家的商品，都分配到指定的shard
+- 默认的`_routing`值是文档id
+- 可以自行限定`_ronting`数值，例如相同国家的商品，都分配到指定的shard
 - 设置Index settings 后，Primary数，不能随意修改的根本原因
 
 
@@ -700,12 +970,6 @@ xpack.security.enabled: false
 
 
 
-## 多文档操作流程
-
-
-
-
-
 # 参考资源
 
 [windows环境下elasticsearch安装教程](https://www.cnblogs.com/hualess/p/11540477.html)
@@ -733,4 +997,22 @@ xpack.security.enabled: false
 [ElasticSearch分片是什么?投票机制是怎样的？脑裂问题如何解决](https://blog.csdn.net/weixin_45031111/article/details/103204605)
 
 [Elasticsearch7-分布式及分布式搜索机制](https://www.cnblogs.com/xzkzzz/p/12119387.html)
+
+[Elasticsearch Snapshot恢复数据分片显示未分片](https://cloud.tencent.com/developer/article/1659221)
+
+[Elasticsearch集群和索引健康状态及常见错误说明](https://www.cnblogs.com/kevingrace/p/10671063.html)
+
+[Elasticsearch7之snapshot使用](https://rstyro.github.io/blog/2020/09/28/Elasticsearch7%E4%B9%8Bsnapshot%E4%BD%BF%E7%94%A8/)
+
+[ElasticSearch导入txt文本或者json文本](https://www.cnblogs.com/ttzsqwq/p/11077574.html)
+
+[将普通文本文件导入Elasticsearch](https://www.pianshen.com/article/5399591779/)
+
+[ELK之logstash使用-----logstash将txt文本的接送数据导入到ES中](https://blog.csdn.net/weixin_44993313/article/details/106340355)
+
+[elasticsearch使用BulkProcesssor导入txt大文件](https://qyi.io/archives/771.html)
+
+[Elasticsearch Bulk Processor](https://www.elastic.co/guide/en/elasticsearch/client/java-api/2.3/java-docs-bulk-processor.html)
+
+[Elasticsearch-BulkProcessor浅析](https://blog.csdn.net/baichoufei90/article/details/97117025)
 

@@ -1,0 +1,87 @@
+kind: pipeline
+branches: [master, rc]
+name: antl
+
+trigger:
+  branch:
+    - rc
+    - master
+
+steps:
+  - name: restore-cache
+    image: drillster/drone-volume-cache
+    volumes:
+      - name: cache
+        path: /cache
+    settings:
+      restore: true
+      mount:
+        - ./node_modules
+
+   #编译打包并做映射
+     - name: build
+	image: node:lts-stretch-slim
+	volumes:
+		- name: localtime
+		path: /etc/localtime
+		commands:
+			- npm -v
+			- node -v
+			- npm install
+			- npm run build
+	
+# 项目部署
+- name: deploy-rc
+	image: drillster/drone-rsync
+volumes:
+	- name: hosts
+path: /etc/hosts
+settings:
+	hosts:
+		- 192.168.x.x
+	user:
+		from_secret: user_secret
+	key:
+		from_secret: user_secret_key
+	delete: true
+	source: ./dist
+	target: /home/ubuntu/www/
+when:
+	branch:
+		- rc
+#钉钉通知
+- name:	 dingtalk
+image: guoxudongdocker/drone-dingtalk
+settings:
+	token:
+		from_secret: dingtalk_token1
+		message_color: true
+	type: markdown
+	message_pic: true
+	sha_link: true
+when:
+   status:
+	- success
+	- changed
+	- failure
+
+
+
+- name: rebuild-cache
+	image: drillster/drone-volume-cache
+volumes:
+	- name: cache
+	path: /cache
+settings:
+	rebuild: true
+mount:
+	- ./node_modules
+
+
+volumes:
+	- name: cache
+	host:
+	path: /var/local/drone-cache
+	- name: hosts
+	host:
+	path: /etc/hosts
